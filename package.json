@@ -1,0 +1,20 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/zineac/Backend-Pizzeria#readme",
+  "bugs": {
+    "url": "https://github.com/zineac/Backend-Pizzeria/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zineac/Backend-Pizzeria.git"
+  },
+  "license": "ISC",
+  "author": "Arck",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}

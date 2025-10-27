@@ -11,5 +11,7 @@ export const {
   DB_PORT = '3306',
   DB_NAME = 'pizzeria',
   DB_USER = 'root',
-  DB_PASSWORD = ''
+  DB_PASSWORD = '',
+  // JWT
+  JWT_SECRET = 'MONT-27'
 } = process.env

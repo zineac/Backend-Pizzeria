@@ -34,7 +34,11 @@ export const loginUser = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password)
     if (!isMatch) return res.status(400).json({ mensaje: 'Contraseña incorrecta' })
 
-    const token = jwt.sign({ id: user.id, email: user.email, rol: user.rol.nombre }, JWT_SECRET, { expiresIn: '8h' })
+    const token = jwt.sign(
+      { id: user.id, nombre: user.nombre, email: user.email, rol: user.rol.nombre },
+      JWT_SECRET,
+      { expiresIn: '1h' }
+    )
 
     res.cookie('token', token, { httpOnly: true, maxAge: 1000 * 60 * 60 })
     res.json({ mensaje: 'Login exitoso' })
@@ -44,19 +48,11 @@ export const loginUser = async (req, res) => {
   }
 }
 
-export const verifyToken = async (req, res) => {
-  const { token } = req.cookies
-  if (!token) return res.status(401).json({ mensaje: 'Token no proporcionado' })
-
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET)
-    res.json({ mensaje: 'Token válido', user: decoded })
-  } catch (error) {
-    res.status(401).json({ mensaje: 'Token inválido' })
-  }
+export const getProfile = (req, res) => {
+  res.json({ user: req.user })
 }
 
-export const logoutUser = async (req, res) => {
+export const logoutUser = (req, res) => {
   res.clearCookie('token')
   res.json({ mensaje: 'Logout exitoso' })
 }

@@ -8,20 +8,46 @@ export const db = new Sequelize(DB_NAME, DB_USER, DB_PASSWORD, {
   logging: false
 })
 
-export const syncDB = async () => {
+export const initDB = async () => {
   try {
-    await db.sync()
+    await createDB()
+    await connectDB()
+    await syncDB()
   } catch (error) {
-    console.error(`No se pudo sincronizar con la bd: ${error}`)
-    process.exit(1)
+    throw new Error(`Error al inicializar la bd -> ${error.message}`)
   }
 }
 
-export const testConnectDB = async () => {
+const createDB = async () => {
+  let temp
+  try {
+    temp = new Sequelize('', DB_USER, DB_PASSWORD, {
+      host: DB_HOST,
+      port: DB_PORT,
+      dialect: DB_SQL,
+      logging: false
+    })
+    await temp.query(`CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\`;`)
+    await temp.close()
+  } catch (error) {
+    throw new Error(`No se pudo crear: ${error.message}`)
+  } finally {
+    if (temp) await temp.close()
+  }
+}
+
+const connectDB = async () => {
   try {
     await db.authenticate()
   } catch (error) {
-    console.error(`No se pudo conectar con la db: ${error}`)
-    process.exit(1)
+    throw new Error(`No se pudo conectar: ${error.message}`)
+  }
+}
+
+const syncDB = async () => {
+  try {
+    await db.sync()
+  } catch (error) {
+    throw new Error(`No se pudo sincronizar: ${error.message}`)
   }
 }

@@ -1,0 +1,64 @@
+### Crear usuario desde panel administrador
+# Crea un nuevo usuario en el sistema. Solo accesible para ADMINISTRADOR.
+# Parámetros requeridos: nombre, email, password, id_rol
+# Parámetros opcionales: telefono, direccion
+POST http://localhost:8000/api/user
+Content-Type: application/json
+
+{
+  "nombre": "Juan Perez",
+  "email": "juan@example4.com",
+  "password": "123456",
+  "id_rol": 3,
+  "telefono": "123456789",
+  "direccion": "Calle Falsa 123"
+}
+
+### Obtener usuarios
+# Lista todos los usuarios. 
+# ADMINISTRADOR puede ver todos los usuarios y aplicar filtros.
+# PERSONAL solo puede ver usuarios con rol cliente.
+# Parámetros opcionales (query): nombre, activo (true/false), rol
+GET http://localhost:8000/api/user?nombre=Juan&activo=true&rol=1
+
+### Obtener usuario por ID
+# Trae los datos de un usuario específico por su ID.
+# PERSONAL solo puede acceder a usuarios con rol cliente.
+GET http://localhost:8000/api/user/9
+
+### Actualizar usuario
+# Actualiza un usuario existente. Solo accesible para ADMINISTRADOR.
+# Parámetros opcionales: nombre, email, telefono, direccion, activo, id_rol
+PUT http://localhost:8000/api/user/1
+Content-Type: application/json
+
+{
+  "nombre": "Juan Actualizado",
+  "email": "juan@example2.com",
+  "telefono": "987654321",
+  "direccion": "Calle Actualizada 456",
+  "activo": true,
+  "id_rol": 1
+}
+
+### Delete usuario (borrado lógico)
+# Desactiva un usuario estableciendo activo = false. Solo ADMINISTRADOR puede usarlo.
+DELETE http://localhost:8000/api/user/2
+
+### Actualizar mi perfil (PUT /me)
+# Permite al usuario autenticado actualizar su propio perfil.
+# Parámetros opcionales: nombre, email, telefono, direccion, password
+PUT http://localhost:8000/api/user/me
+Content-Type: application/json
+
+{
+  "nombre": "Mi Nombre Actualizado",
+  "email": "nuevo@email.com",
+  "telefono": "987654321",
+  "direccion": "Mi Calle Actualizada",
+  "password": "nuevacontraseña"
+}
+
+### Desactivarme (DELETE /me) - borrado lógico
+# Permite al usuario autenticado desactivarse a sí mismo. Se establece activo = false.
+DELETE http://localhost:8000/api/user/me

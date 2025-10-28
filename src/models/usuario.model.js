@@ -10,7 +10,8 @@ export const Usuario = db.define('Usuario', {
   telefono: { type: DataTypes.STRING(20) },
   direccion: { type: DataTypes.STRING(255) },
   id_rol: { type: DataTypes.INTEGER, allowNull: false },
-  fecha_registro: { type: DataTypes.DATE, defaultValue: DataTypes.NOW }
+  fecha_registro: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
+  activo: { type: DataTypes.BOOLEAN, defaultValue: true }
 }, {
   tableName: 'usuarios',
   timestamps: false

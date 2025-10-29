@@ -1,4 +1,7 @@
 ### Registrar usuario
+# Registra un nuevo usuario con rol CLIENTE (por defecto).
+# Parámetros requeridos: nombre, email, password
+# Retorna: mensaje de confirmación y el userId creado.
 POST http://localhost:8000/api/auth/register
 Content-Type: application/json
 
@@ -10,7 +13,10 @@ Content-Type: application/json
 
 ###
 
-### Login
+### Iniciar sesión
+# Inicia sesión del usuario y genera un token JWT almacenado en una cookie (token).
+# Parámetros requeridos: email, password
+# Retorna: mensaje de login exitoso y la cookie token.
 POST http://localhost:8000/api/auth/login
 Content-Type: application/json
 
@@ -21,12 +27,16 @@ Content-Type: application/json
 
 ###
 
-### Obtener perfil (profile)
+### Obtener perfil del usuario autenticado
+# Devuelve la información del usuario actualmente autenticado según el token almacenado en cookies.
+# No requiere parámetros.
+# Retorna: id, nombre, email y rol del usuario.
 GET http://localhost:8000/api/auth/profile
-# Asegúrate de enviar cookies habilitadas
 
 ###
 
-### Logout
+### Cerrar sesión
+# Cierra la sesión eliminando la cookie 'token' del cliente.
+# No requiere parámetros.
+# Retorna: mensaje de confirmación de logout.
 POST http://localhost:8000/api/auth/logout
-# Cookie 'token' se eliminará

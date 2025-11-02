@@ -36,6 +36,26 @@ Rutas de gestión de usuarios.
 > - Los filtros en `GET /api/usuario` se envían como **query params** (ejemplo: `/api/usuario?nombre=Juan&activo=true`).
 
 
+## 🎭 Rutas de Roles (`/api/rol`)
+
+Rutas para gestionar los **roles** disponibles en el sistema.  
+- Todas las rutas son **solo accesibles para ADMINISTRADOR**.  
+- Los roles se usan principalmente para asignar permisos a los usuarios.  
+
+| Método | Endpoint | Descripción | Roles Permitidos | Parámetros Obligatorios | Parámetros Opcionales |
+|:--------|:----------|:-------------|:------------------|:------------------------|:----------------------|
+| **GET** | `/api/rol` | Lista todos los roles disponibles. | `ADMINISTRADOR` | — | — |
+| **GET** | `/api/rol/:id` | Obtiene los datos de un rol específico por su ID. | `ADMINISTRADOR` | `id` | — |
+| **POST** | `/api/rol` | Crea un nuevo rol en el sistema. | `ADMINISTRADOR` | `nombre` | — |
+| **PUT** | `/api/rol/:id` | Actualiza un rol existente. | `ADMINISTRADOR` | `id` | `nombre` |
+| **DELETE** | `/api/rol/:id` | Elimina un rol del sistema. | `ADMINISTRADOR` | `id` | — |
+
+> **Notas:**
+> - El campo `nombre` es obligatorio para crear un nuevo rol.  
+> - Todas las rutas requieren autenticación mediante **JWT** y verificación de rol `ADMINISTRADOR`.  
+> - No hay rutas públicas para roles, ya que solo los administradores necesitan gestionarlos.
+
+
 ## 🌿 Rutas de Ingredientes (`/api/ingrediente`)
 
 Rutas para gestionar los **ingredientes** disponibles en la pizzería.  

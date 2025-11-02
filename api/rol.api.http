@@ -1,0 +1,44 @@
+### Listar todos los roles
+# Devuelve todos los roles disponibles en el sistema.
+# Solo accesible para ADMINISTRADOR.
+GET http://localhost:8000/api/rol
+
+###
+
+### Obtener rol por ID
+# Devuelve un rol específico por su ID.
+# Solo accesible para ADMINISTRADOR.
+GET http://localhost:8000/api/rol/1
+
+###
+
+### Crear nuevo rol
+# Crea un nuevo rol en el sistema.
+# Solo accesible para ADMINISTRADOR.
+# Parámetros requeridos: nombre
+POST http://localhost:8000/api/rol
+Content-Type: application/json
+
+{
+  "nombre": "Inspector"
+}
+
+###
+
+### Actualizar rol
+# Actualiza el nombre de un rol existente.
+# Solo accesible para ADMINISTRADOR.
+# Parámetros opcionales: nombre
+PUT http://localhost:8000/api/rol/6
+Content-Type: application/json
+
+{
+  "nombre": "desarrollador"
+}
+
+###
+
+### Eliminar rol
+# Elimina un rol específico del sistema.
+# Solo accesible para ADMINISTRADOR.
+DELETE http://localhost:8000/api/rol/6

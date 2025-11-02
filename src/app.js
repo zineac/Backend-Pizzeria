@@ -5,6 +5,7 @@ import authRoutes from './routes/auth.routes.js'
 import usuarioRoutes from './routes/usuario.routes.js'
 import ingredienteRoutes from './routes/ingrediente.routes.js'
 import productoRoutes from './routes/producto.routes.js'
+import rolRoutes from './routes/rol.routes.js'
 
 const app = express()
 
@@ -17,5 +18,6 @@ app.use('/api/auth', authRoutes)
 app.use('/api/usuario', usuarioRoutes)
 app.use('/api/ingrediente', ingredienteRoutes)
 app.use('/api/producto', productoRoutes)
+app.use('/api/rol', rolRoutes)
 
 export default app

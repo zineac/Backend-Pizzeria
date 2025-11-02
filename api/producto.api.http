@@ -1,0 +1,80 @@
+### Obtener productos
+# Lista todos los productos disponibles.
+# - ADMINISTRADOR y PERSONAL pueden ver productos activos e inactivos.
+# - CLIENTE y REPARTIDOR solo verán productos activos.
+# Parámetros opcionales (query): nombre, activo (true/false)
+GET http://localhost:8000/api/producto
+
+###
+
+### Obtener producto por ID
+# Devuelve los datos de un producto específico.
+# CLIENTE y REPARTIDOR solo pueden acceder a productos activos.
+GET http://localhost:8000/api/producto/2
+
+###
+
+### Crear nuevo producto
+# Crea un nuevo producto en el sistema.
+# Solo accesible para ADMINISTRADOR.
+# Parámetros requeridos: nombre, precio
+# Parámetros opcionales: descripcion, activo
+POST http://localhost:8000/api/producto
+Content-Type: application/json
+
+{
+  "nombre": "Pizza Napolitana",
+  "descripcion": "Pizza con tomate, mozzarella y albahaca.",
+  "precio": 12.99,
+  "activo": true
+}
+
+###
+
+### Actualizar producto
+# Actualiza la información de un producto existente.
+# Accesible para ADMINISTRADOR y PERSONAL.
+# Parámetros opcionales: nombre, descripcion, precio, activo
+PUT http://localhost:8000/api/producto/2
+Content-Type: application/json
+
+{
+  "nombre": "Pizza 4 Quesos",
+  "precio": 14.50,
+  "descripcion": "Mozzarella, parmesano, gorgonzola y provolone."
+}
+
+###
+
+### Desactivar producto (borrado lógico)
+# Desactiva un producto estableciendo activo = false.
+# Solo accesible para ADMINISTRADOR.
+DELETE http://localhost:8000/api/producto/2
+
+###
+
+### Obtener ingredientes del producto
+# Lista los ingredientes asociados a un producto.
+# - Todos los usuarios pueden acceder.
+# - Si el producto está inactivo, solo ADMINISTRADOR y PERSONAL podrán verlo.
+GET http://localhost:8000/api/producto/2/ingrediente
+
+###
+
+### Agregar ingredientes a un producto
+# Agrega varios ingredientes a un producto existente.
+# Solo accesible para ADMINISTRADOR o PERSONAL.
+# Parámetro requerido: ingredientes (array de IDs)
+POST http://localhost:8000/api/producto/2/ingrediente
+Content-Type: application/json
+
+{
+  "ingredientes": [1, 3, 5]
+}
+
+###
+
+### Eliminar ingrediente de un producto
+# Elimina un ingrediente específico de un producto.
+# Solo accesible para ADMINISTRADOR o PERSONAL.
+DELETE http://localhost:8000/api/producto/2/ingrediente/5

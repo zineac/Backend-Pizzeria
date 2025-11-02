@@ -57,3 +57,29 @@ Rutas para gestionar los **ingredientes** disponibles en la pizzería.
 > - El campo `activo` indica si el ingrediente está disponible para usar en productos.  
 > - Los filtros (`nombre`, `activo`) se envían como **query params**:  
 >   - Ejemplo: `/api/ingrediente?nombre=queso&activo=true`.
+
+
+## 🍕 Rutas de Productos (`/api/producto`)
+
+Rutas para la gestión de los **productos** (por ejemplo, pizzas) del sistema.  
+- **ADMINISTRADOR** tiene acceso total (crear, actualizar, eliminar, ver activos e inactivos).  
+- **PERSONAL** puede listar, ver y actualizar productos activos e inactivos.  
+- **CLIENTE** y **REPARTIDOR** solo pueden ver productos activos.  
+
+| Método | Endpoint | Descripción | Roles Permitidos | Parámetros Obligatorios | Parámetros Opcionales |
+|:--------|:----------|:-------------|:------------------|:------------------------|:----------------------|
+| **GET** | `/api/producto` | Lista todos los productos disponibles. | `ADMINISTRADOR`, `PERSONAL`, `CLIENTE`, `REPARTIDOR` | — | `nombre`, `activo` (`true/false`) |
+| **GET** | `/api/producto/:id` | Obtiene los datos de un producto por su `id`. | `ADMINISTRADOR`, `PERSONAL`, `CLIENTE`, `REPARTIDOR` | `id` | — |
+| **POST** | `/api/producto` | Crea un nuevo producto. | `ADMINISTRADOR` | `nombre`, `precio` | `descripcion`, `activo` |
+| **PUT** | `/api/producto/:id` | Actualiza los datos de un producto existente. | `ADMINISTRADOR`, `PERSONAL` | `id` | `nombre`, `descripcion`, `precio`, `activo` |
+| **DELETE** | `/api/producto/:id` | Desactiva un producto (borrado lógico: `activo = false`). | `ADMINISTRADOR` | `id` | — |
+| **GET** | `/api/producto/:id/ingrediente` | Lista los ingredientes asociados a un producto. | `ADMINISTRADOR`, `PERSONAL`, `CLIENTE`, `REPARTIDOR` | `id` | — |
+| **POST** | `/api/producto/:id/ingrediente` | Agrega uno o varios ingredientes a un producto existente. | `ADMINISTRADOR`, `PERSONAL` | `id`, `ingredientes` (array de IDs) | — |
+| **DELETE** | `/api/producto/:id/ingrediente/:idIng` | Elimina un ingrediente específico de un producto. | `ADMINISTRADOR`, `PERSONAL` | `id`, `idIng` | — |
+
+> **Notas:**
+> - Los **productos inactivos (`activo = false`)** no son visibles para `CLIENTE` ni `REPARTIDOR`.  
+> - El campo `activo` es de tipo booleano (`true`/`false`).  
+> - Los filtros en `GET /api/producto` se envían como **query params** (ejemplo: `/api/producto?nombre=pizza&activo=true`).  
+> - Al eliminar un producto, este **no se borra físicamente**, solo se marca como inactivo.  
+> - Las relaciones con ingredientes se gestionan mediante las rutas `/api/producto/:id/ingrediente`.

@@ -12,12 +12,11 @@ INSERT INTO roles (nombre) VALUES
 -- =================================
 -- Usuarios de ejemplo
 -- =================================
-INSERT INTO usuarios (nombre, email, password, telefono, direccion, id_rol) VALUES
-('Carlos Admin', 'admin@pizzeria.com', 'admin123', '555-111', 'Calle Central 123', 4),
-('Lucía López', 'lucia@example.com', 'cliente123', '555-222', 'Av. Las Flores 456', 1),
-('Pedro Repartidor', 'pedro@example.com', 'repartidor123', '555-333', 'Zona Norte 789', 2),
-('Ana Personal', 'ana@pizzeria.com', 'personal123', '555-444', 'Calle Secundaria 321', 3),
-('Jorge Propietario', 'jorge@pizzeria.com', 'propietario123', '555-555', 'Av. Principal 987', 5);
+INSERT INTO usuarios (nombre, email, password, telefono, direccion, id_rol, activo) VALUES
+('Carlos Admin', 'admin@pizzeria.com', 'admin123', '555-111', 'Calle Central 123', 4, true),
+('Lucía López', 'lucia@example.com', 'cliente123', '555-222', 'Av. Las Flores 456', 1, true),
+('Pedro Repartidor', 'pedro@example.com', 'repartidor123', '555-333', 'Zona Norte 789', 2, true),
+('Ana Personal', 'ana@pizzeria.com', 'personal123', '555-444', 'Calle Secundaria 321', 3, true);
 
 -- =================================
 -- Métodos de pago

@@ -13,3 +13,16 @@ export const authenticate = (req, res, next) => {
     res.status(401).json({ mensaje: 'Token inválido' })
   }
 }
+
+export const authenticateOptional = (req, res, next) => {
+  const { token } = req.cookies
+  if (!token) return next()
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET)
+    req.user = decoded
+    next()
+  } catch (error) {
+    res.status(401).json({ mensaje: 'Token inválido' })
+  }
+}

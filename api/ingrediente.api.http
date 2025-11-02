@@ -1,0 +1,52 @@
+### Obtener ingredientes
+# Lista todos los ingredientes disponibles.
+# - ADMINISTRADOR y PERSONAL pueden ver ingredientes activos e inactivos.
+# - CLIENTE y REPARTIDOR solo verán ingredientes activos.
+# Parámetros opcionales (query): nombre, activo (true/false)
+GET http://localhost:8000/api/ingrediente
+
+###
+
+### Obtener ingrediente por ID
+# Devuelve los datos de un ingrediente específico.
+# CLIENTE y REPARTIDOR solo pueden acceder a ingredientes activos.
+GET http://localhost:8000/api/ingrediente/3
+
+###
+
+### Crear nuevo ingrediente
+# Crea un nuevo ingrediente en el sistema.
+# Solo accesible para ADMINISTRADOR.
+# Parámetros requeridos: nombre
+# Parámetros opcionales: costo_extra, stock, activo
+POST http://localhost:8000/api/ingrediente
+Content-Type: application/json
+
+{
+  "nombre": "Queso Mozzarella",
+  "costo_extra": 2.50,
+  "stock": 150,
+  "activo": true
+}
+
+###
+
+### Actualizar ingrediente
+# Actualiza la información de un ingrediente existente.
+# Accesible para ADMINISTRADOR y PERSONAL.
+# Parámetros opcionales: nombre, costo_extra, stock, activo
+PUT http://localhost:8000/api/ingrediente/3
+Content-Type: application/json
+
+{
+  "nombre": "Queso Cheddar",
+  "costo_extra": 3.00,
+  "stock": 120
+}
+
+###
+
+### Desactivar ingrediente (borrado lógico)
+# Desactiva un ingrediente estableciendo activo = false.
+# Solo accesible para ADMINISTRADOR.
+DELETE http://localhost:8000/api/ingrediente/3

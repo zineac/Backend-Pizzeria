@@ -1,0 +1,52 @@
+### Obtener métodos de pago
+# Lista todos los métodos de pago disponibles.
+# Accesible para cualquier usuario autenticado (ADMINISTRADOR, PERSONAL, CLIENTE o REPARTIDOR).
+# - ADMINISTRADOR y PERSONAL pueden ver activos e inactivos.
+# - CLIENTE y REPARTIDOR solo verán los activos.
+# Parámetros opcionales (query): tipo, activo (true/false)
+GET http://localhost:8000/api/pago
+
+###
+
+### Obtener método de pago por ID
+# Devuelve los datos de un método de pago específico.
+# Accesible para cualquier usuario autenticado (ADMINISTRADOR, PERSONAL, CLIENTE o REPARTIDOR).
+# CLIENTE y REPARTIDOR no pueden acceder a métodos inactivos.
+GET http://localhost:8000/api/pago/2
+
+###
+
+### Crear nuevo método de pago
+# Crea un nuevo método de pago en el sistema.
+# Solo accesible para ADMINISTRADOR.
+# Parámetros requeridos: tipo
+# Parámetros opcionales: descripcion
+POST http://localhost:8000/api/pago
+Content-Type: application/json
+
+{
+  "tipo": "Pasarela",
+  "descripcion": "Pago en línea mediante tarjeta o billetera digital."
+}
+
+###
+
+### Actualizar método de pago
+# Actualiza la información de un método de pago existente.
+# Solo accesible para ADMINISTRADOR.
+# Parámetros opcionales: tipo, descripcion, activo (true/false)
+PUT http://localhost:8000/api/pago/3
+Content-Type: application/json
+
+{
+  "tipo": "Presencial",
+  "descripcion": "Pago físico en tienda o contraentrega.",
+  "activo": true
+}
+
+###
+
+### Desactivar método de pago (borrado lógico)
+# Marca el método de pago como inactivo (activo = false).
+# Solo accesible para ADMINISTRADOR.
+DELETE http://localhost:8000/api/pago/3

@@ -103,3 +103,27 @@ Rutas para la gestión de los **productos** (por ejemplo, pizzas) del sistema.
 > - Los filtros en `GET /api/producto` se envían como **query params** (ejemplo: `/api/producto?nombre=pizza&activo=true`).  
 > - Al eliminar un producto, este **no se borra físicamente**, solo se marca como inactivo.  
 > - Las relaciones con ingredientes se gestionan mediante las rutas `/api/producto/:id/ingrediente`.
+
+
+## 💳 Rutas de Métodos de Pago (`/api/pago`)
+
+Rutas para gestionar los **métodos de pago** disponibles en el sistema.  
+- **ADMINISTRADOR** puede crear, actualizar, desactivar y listar todos los métodos.  
+- **PERSONAL** puede ver métodos activos e inactivos.  
+- **CLIENTE** y **REPARTIDOR** solo pueden ver los métodos activos.  
+- Se utiliza **borrado lógico** mediante el campo `activo`.
+
+| Método | Endpoint | Descripción | Roles Permitidos | Parámetros Obligatorios | Parámetros Opcionales |
+|:--------|:----------|:-------------|:------------------|:------------------------|:----------------------|
+| **GET** | `/api/pago` | Lista todos los métodos de pago disponibles. | `ADMINISTRADOR`, `PERSONAL`, `CLIENTE`, `REPARTIDOR` | — | `tipo`, `activo` (`true/false`) |
+| **GET** | `/api/pago/:id` | Obtiene los datos de un método de pago específico. | `ADMINISTRADOR`, `PERSONAL`, `CLIENTE`, `REPARTIDOR` | `id` | — |
+| **POST** | `/api/pago` | Crea un nuevo método de pago. | `ADMINISTRADOR` | `tipo` | `descripcion` |
+| **PUT** | `/api/pago/:id` | Actualiza la información de un método de pago existente. | `ADMINISTRADOR` | `id` | `tipo`, `descripcion`, `activo` (`true/false`) |
+| **DELETE** | `/api/pago/:id` | Desactiva un método de pago (borrado lógico). | `ADMINISTRADOR` | `id` | — |
+
+> **Notas:**
+> - Los métodos de pago inactivos no estarán disponibles para selección en nuevos pedidos.  
+> - Los pedidos históricos mantienen el método asociado incluso si este fue desactivado.  
+> - El campo `activo` permite controlar la disponibilidad sin eliminar datos del sistema.  
+> - Los filtros (`tipo`, `activo`) se envían como **query params**, por ejemplo:  
+>   `/api/pago?tipo=pasarela&activo=true`.

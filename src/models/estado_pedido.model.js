@@ -3,7 +3,8 @@ import { DataTypes } from 'sequelize'
 
 export const EstadoPedido = db.define('EstadoPedido', {
   id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
-  nombre: { type: DataTypes.STRING(50), allowNull: false }
+  nombre: { type: DataTypes.STRING(50), allowNull: false },
+  activo: { type: DataTypes.BOOLEAN, defaultValue: true }
 }, {
   tableName: 'estados_pedido',
   timestamps: false

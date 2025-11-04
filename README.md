@@ -127,3 +127,27 @@ Rutas para gestionar los **métodos de pago** disponibles en el sistema.
 > - El campo `activo` permite controlar la disponibilidad sin eliminar datos del sistema.  
 > - Los filtros (`tipo`, `activo`) se envían como **query params**, por ejemplo:  
 >   `/api/pago?tipo=pasarela&activo=true`.
+
+
+## 🚦 Rutas de Estados de Pedido (`/api/estado`)
+
+Rutas para gestionar los **estados de los pedidos** del sistema.  
+Cada pedido posee un estado que indica su progreso (por ejemplo: *Pendiente*, *En preparación*, *En reparto*, *Entregado*, etc.).
+
+- **ADMINISTRADOR** puede crear, actualizar, desactivar y listar todos los estados.
+- **PERSONAL** puede listar todos los estados (activos e inactivos).
+- **CLIENTE** y **REPARTIDOR** solo pueden ver los estados activos (no modificarlos).
+
+| Método | Endpoint | Descripción | Roles Permitidos | Parámetros Obligatorios | Parámetros Opcionales |
+|:--------|:----------|:-------------|:------------------|:------------------------|:----------------------|
+| **GET** | `/api/estado` | Lista todos los estados de pedido disponibles. | `ADMINISTRADOR`, `PERSONAL`, `CLIENTE`, `REPARTIDOR` | — | `nombre`, `activo` (`true/false`) |
+| **GET** | `/api/estado/:id` | Obtiene los datos de un estado específico. | `ADMINISTRADOR`, `PERSONAL`, `CLIENTE`, `REPARTIDOR` | `id` | — |
+| **POST** | `/api/estado` | Crea un nuevo estado de pedido. | `ADMINISTRADOR` | `nombre` | — |
+| **PUT** | `/api/estado/:id` | Actualiza los datos de un estado existente. | `ADMINISTRADOR` | `id` | `nombre`, `activo` (`true/false`) |
+| **DELETE** | `/api/estado/:id` | Desactiva un estado (borrado lógico: `activo = false`). | `ADMINISTRADOR` | `id` | — |
+
+> **Notas:**
+> - El campo `activo` indica si el estado puede ser asignado a nuevos pedidos.
+> - Los estados inactivos se mantienen en la base de datos para preservar el historial de pedidos previos.
+> - Los filtros (`nombre`, `activo`) se envían como **query params**, por ejemplo:  
+>   `/api/estado?nombre=pendiente&activo=true`.

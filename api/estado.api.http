@@ -1,0 +1,49 @@
+### Obtener estados de pedido
+# Lista todos los estados disponibles.
+# Accesible para cualquier usuario autenticado (ADMINISTRADOR, PERSONAL, CLIENTE o REPARTIDOR).
+# - ADMINISTRADOR y PERSONAL pueden ver activos e inactivos.
+# - CLIENTE y REPARTIDOR solo verán los activos.
+# Parámetros opcionales (query): nombre, activo (true/false)
+GET http://localhost:8000/api/estado
+
+###
+
+### Obtener estado por ID
+# Devuelve los datos de un estado específico.
+# Accesible para cualquier usuario autenticado (ADMINISTRADOR, PERSONAL, CLIENTE o REPARTIDOR).
+# CLIENTE y REPARTIDOR no pueden acceder a estados inactivos.
+GET http://localhost:8000/api/estado/2
+
+###
+
+### Crear nuevo estado
+# Crea un nuevo estado en el sistema.
+# Solo accesible para ADMINISTRADOR.
+# Parámetros requeridos: nombre
+POST http://localhost:8000/api/estado
+Content-Type: application/json
+
+{
+  "nombre": "Entregado"
+}
+
+###
+
+### Actualizar estado
+# Actualiza la información de un estado existente.
+# Solo accesible para ADMINISTRADOR.
+# Parámetros opcionales: nombre, activo (true/false)
+PUT http://localhost:8000/api/estado/6
+Content-Type: application/json
+
+{
+  "nombre": "En reparto",
+  "activo": true
+}
+
+###
+
+### Desactivar estado (borrado lógico)
+# Marca el estado como inactivo (activo = false).
+# Solo accesible para ADMINISTRADOR.
+DELETE http://localhost:8000/api/estado/6

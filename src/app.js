@@ -6,6 +6,7 @@ import usuarioRoutes from './routes/usuario.routes.js'
 import ingredienteRoutes from './routes/ingrediente.routes.js'
 import productoRoutes from './routes/producto.routes.js'
 import rolRoutes from './routes/rol.routes.js'
+import pagoRoutes from './routes/pago.routes.js'
 
 const app = express()
 
@@ -19,5 +20,6 @@ app.use('/api/usuario', usuarioRoutes)
 app.use('/api/ingrediente', ingredienteRoutes)
 app.use('/api/producto', productoRoutes)
 app.use('/api/rol', rolRoutes)
+app.use('/api/pago', pagoRoutes)
 
 export default app

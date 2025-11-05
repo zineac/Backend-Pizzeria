@@ -1,16 +1,19 @@
 ## 🧩 Rutas de Autenticación (`/api/auth`)
 
-Rutas para registro, inicio y cierre de sesión, usando **JWT almacenado en cookies**.  
-Los usuarios registrados se crean automáticamente con el rol **CLIENTE (`id_rol = 1`)**.
+Rutas para **registro, inicio y cierre de sesión**, usando **JWT almacenado en cookies**.  
+Los usuarios registrados se crean automáticamente con el rol **CLIENTE (`id_rol = 1`)**.  
 
-| Método | Endpoint              | Descripción                                                                                              |
-|:--------|:----------------------|:---------------------------------------------------------------------------------------------------------|
-| **POST** | `/api/auth/register` | Registra un nuevo usuario con `nombre`, `email` y `password`. Retorna el `userId`.                       |
-| **POST** | `/api/auth/login`    | Inicia sesión validando `email` y `password`. Genera un **JWT** almacenado en la cookie `token`.         |
-| **GET**  | `/api/auth/profile`  | Devuelve la información del usuario autenticado (`id`, `nombre`, `email`, `rol`).                        |
-| **POST** | `/api/auth/logout`   | Cierra la sesión eliminando la cookie `token`.                                                           |
+| Método | Endpoint              | Descripción                                                                                              | Roles Permitidos | Parámetros Obligatorios       | Parámetros Opcionales |
+|:--------|:----------------------|:---------------------------------------------------------------------------------------------------------|:----------------|:-----------------------------|:--------------------|
+| **POST** | `/api/auth/register` | Registra un nuevo usuario con `nombre`, `email` y `password`. Retorna el `userId`.                       | Público         | `nombre`, `email`, `password` | — |
+| **POST** | `/api/auth/login`    | Inicia sesión validando `email` y `password`. Genera un **JWT** almacenado en la cookie `token`.         | Público         | `email`, `password`          | — |
+| **GET**  | `/api/auth/profile`  | Devuelve la información del usuario autenticado (`id`, `nombre`, `email`, `rol`).                        | Todos los usuarios autenticados | — | — |
+| **POST** | `/api/auth/logout`   | Cierra la sesión eliminando la cookie `token`.                                                           | Todos los usuarios autenticados | — | — |
 
-> **Nota:** Excepto `/register` y `/login`, todas las rutas requieren autenticación mediante la cookie `token`.
+> **Notas:**
+> - Excepto `/register` y `/login`, todas las rutas requieren autenticación mediante la cookie `token`.  
+> - El registro automático asigna el rol **CLIENTE** a todos los nuevos usuarios.  
+> - El JWT se envía en la **cookie `token`**, por lo que las demás rutas protegidas deben leer esta cookie para validar al usuario.
 
 
 ## 👥 Rutas de Usuarios (`/api/usuario`)
@@ -56,27 +59,29 @@ Rutas para gestionar los **roles** disponibles en el sistema.
 > - No hay rutas públicas para roles, ya que solo los administradores necesitan gestionarlos.
 
 
-## 🌿 Rutas de Ingredientes (`/api/ingrediente`)
+## 🗂️ Rutas de Categorías de Producto (`/api/categoria`)
 
-Rutas para gestionar los **ingredientes** disponibles en la pizzería.  
-- **ADMINISTRADOR** puede crear, actualizar, eliminar y ver todos los ingredientes.  
-- **PERSONAL** puede listar y actualizar ingredientes activos o inactivos.  
-- **CLIENTE** y **REPARTIDOR** solo pueden ver ingredientes activos.  
+Rutas para la gestión de las **categorías** de productos en el sistema.  
+Cada categoría puede estar activa o inactiva.  
+
+- **ADMINISTRADOR** tiene acceso total (crear, actualizar, eliminar, ver activas e inactivas).  
+- **PERSONAL** puede listar y ver categorías activas e inactivas.  
+- **CLIENTE** y **REPARTIDOR** solo pueden ver categorías activas.  
 
 | Método | Endpoint | Descripción | Roles Permitidos | Parámetros Obligatorios | Parámetros Opcionales |
 |:--------|:----------|:-------------|:------------------|:------------------------|:----------------------|
-| **GET** | `/api/ingrediente` | Lista todos los ingredientes. Los administradores y el personal pueden filtrar por estado (`activo`). | `ADMINISTRADOR`, `PERSONAL`, `CLIENTE`, `REPARTIDOR` | — | `nombre`, `activo` (`true`/`false`) |
-| **GET** | `/api/ingrediente/:id` | Obtiene un ingrediente por su `id`. Los clientes solo pueden acceder a ingredientes activos. | `ADMINISTRADOR`, `PERSONAL`, `CLIENTE`, `REPARTIDOR` | `id` | — |
-| **POST** | `/api/ingrediente` | Crea un nuevo ingrediente. | `ADMINISTRADOR` | `nombre` | `costo_extra`, `stock`, `activo` |
-| **PUT** | `/api/ingrediente/:id` | Actualiza un ingrediente existente. | `ADMINISTRADOR`, `PERSONAL` | `id` | `nombre`, `costo_extra`, `stock`, `activo` |
-| **DELETE** | `/api/ingrediente/:id` | Desactiva un ingrediente (borrado lógico: `activo = false`). | `ADMINISTRADOR` | `id` | — |
+| **GET** | `/api/categoria` | Lista todas las categorías disponibles. | `ADMINISTRADOR`, `PERSONAL`, `CLIENTE`, `REPARTIDOR` | — | `nombre`, `activo` (`true/false`) |
+| **GET** | `/api/categoria/:id` | Obtiene los datos de una categoría específica. | `ADMINISTRADOR`, `PERSONAL`, `CLIENTE`, `REPARTIDOR` | `id` | — |
+| **POST** | `/api/categoria` | Crea una nueva categoría. | `ADMINISTRADOR` | `nombre` | `descripcion` |
+| **PUT** | `/api/categoria/:id` | Actualiza la información de una categoría existente. | `ADMINISTRADOR` | `id` | `nombre`, `descripcion`, `activo` (`true/false`) |
+| **DELETE** | `/api/categoria/:id` | Desactiva una categoría (borrado lógico: `activo = false`). | `ADMINISTRADOR` | `id` | — |
 
-> **Notas:**
-> - `costo_extra` es un valor decimal que indica el costo adicional del ingrediente (por ejemplo, toppings extras).  
-> - `stock` representa la cantidad disponible del ingrediente en inventario.  
-> - El campo `activo` indica si el ingrediente está disponible para usar en productos.  
-> - Los filtros (`nombre`, `activo`) se envían como **query params**:  
->   - Ejemplo: `/api/ingrediente?nombre=queso&activo=true`.
+### **Notas:**
+
+- Las **categorías inactivas (`activo = false`)** no son visibles para `CLIENTE` ni `REPARTIDOR`.  
+- El **borrado lógico** evita eliminar categorías del historial de productos, simplemente se marca como inactiva.  
+- Los filtros en `GET /api/categoria` se envían como **query params**, por ejemplo: `/api/categoria?nombre=pizza&activo=true`.  
+- Cada categoría puede tener una **descripción** opcional que detalla su contenido o tipo de productos asociados.
 
 
 ## 🍕 Rutas de Productos (`/api/producto`)
@@ -107,6 +112,29 @@ Cada producto pertenece a una **categoría** y puede estar marcado como **person
 - Los filtros en `GET /api/producto` se envían como **query params**, por ejemplo: `/api/producto?nombre=pizza&id_categoria=1&personalizable=true&activo=true`.  
 - Las relaciones entre productos e ingredientes se gestionan mediante las rutas `/api/producto/:id/ingrediente`, que permiten **listar**, **agregar** o **eliminar** ingredientes vinculados a un producto.  
 - Cada producto está asociado a una **categoría** mediante el campo `id_categoria`.  
+
+
+## 🌿 Rutas de Ingredientes (`/api/ingrediente`)
+
+Rutas para gestionar los **ingredientes** disponibles en la pizzería.  
+- **ADMINISTRADOR** puede crear, actualizar, eliminar y ver todos los ingredientes.  
+- **PERSONAL** puede listar y actualizar ingredientes activos o inactivos.  
+- **CLIENTE** y **REPARTIDOR** solo pueden ver ingredientes activos.  
+
+| Método | Endpoint | Descripción | Roles Permitidos | Parámetros Obligatorios | Parámetros Opcionales |
+|:--------|:----------|:-------------|:------------------|:------------------------|:----------------------|
+| **GET** | `/api/ingrediente` | Lista todos los ingredientes. Los administradores y el personal pueden filtrar por estado (`activo`). | `ADMINISTRADOR`, `PERSONAL`, `CLIENTE`, `REPARTIDOR` | — | `nombre`, `activo` (`true`/`false`) |
+| **GET** | `/api/ingrediente/:id` | Obtiene un ingrediente por su `id`. Los clientes solo pueden acceder a ingredientes activos. | `ADMINISTRADOR`, `PERSONAL`, `CLIENTE`, `REPARTIDOR` | `id` | — |
+| **POST** | `/api/ingrediente` | Crea un nuevo ingrediente. | `ADMINISTRADOR` | `nombre` | `costo_extra`, `stock`, `activo` |
+| **PUT** | `/api/ingrediente/:id` | Actualiza un ingrediente existente. | `ADMINISTRADOR`, `PERSONAL` | `id` | `nombre`, `costo_extra`, `stock`, `activo` |
+| **DELETE** | `/api/ingrediente/:id` | Desactiva un ingrediente (borrado lógico: `activo = false`). | `ADMINISTRADOR` | `id` | — |
+
+> **Notas:**
+> - `costo_extra` es un valor decimal que indica el costo adicional del ingrediente (por ejemplo, toppings extras).  
+> - `stock` representa la cantidad disponible del ingrediente en inventario.  
+> - El campo `activo` indica si el ingrediente está disponible para usar en productos.  
+> - Los filtros (`nombre`, `activo`) se envían como **query params**:  
+>   - Ejemplo: `/api/ingrediente?nombre=queso&activo=true`.
 
 
 ## 💳 Rutas de Métodos de Pago (`/api/pago`)
@@ -155,28 +183,3 @@ Cada pedido posee un estado que indica su progreso (por ejemplo: *Pendiente*, *E
 > - Los estados inactivos se mantienen en la base de datos para preservar el historial de pedidos previos.
 > - Los filtros (`nombre`, `activo`) se envían como **query params**, por ejemplo:  
 >   `/api/estado?nombre=pendiente&activo=true`.
-
-
-## 🗂️ Rutas de Categorías (`/api/categoria`)
-
-Rutas para la gestión de las **categorías** de productos en el sistema.  
-Cada categoría puede estar activa o inactiva.  
-
-- **ADMINISTRADOR** tiene acceso total (crear, actualizar, eliminar, ver activas e inactivas).  
-- **PERSONAL** puede listar y ver categorías activas e inactivas.  
-- **CLIENTE** y **REPARTIDOR** solo pueden ver categorías activas.  
-
-| Método | Endpoint | Descripción | Roles Permitidos | Parámetros Obligatorios | Parámetros Opcionales |
-|:--------|:----------|:-------------|:------------------|:------------------------|:----------------------|
-| **GET** | `/api/categoria` | Lista todas las categorías disponibles. | `ADMINISTRADOR`, `PERSONAL`, `CLIENTE`, `REPARTIDOR` | — | `nombre`, `activo` (`true/false`) |
-| **GET** | `/api/categoria/:id` | Obtiene los datos de una categoría específica. | `ADMINISTRADOR`, `PERSONAL`, `CLIENTE`, `REPARTIDOR` | `id` | — |
-| **POST** | `/api/categoria` | Crea una nueva categoría. | `ADMINISTRADOR` | `nombre` | `descripcion` |
-| **PUT** | `/api/categoria/:id` | Actualiza la información de una categoría existente. | `ADMINISTRADOR` | `id` | `nombre`, `descripcion`, `activo` (`true/false`) |
-| **DELETE** | `/api/categoria/:id` | Desactiva una categoría (borrado lógico: `activo = false`). | `ADMINISTRADOR` | `id` | — |
-
-### **Notas:**
-
-- Las **categorías inactivas (`activo = false`)** no son visibles para `CLIENTE` ni `REPARTIDOR`.  
-- El **borrado lógico** evita eliminar categorías del historial de productos, simplemente se marca como inactiva.  
-- Los filtros en `GET /api/categoria` se envían como **query params**, por ejemplo: `/api/categoria?nombre=pizza&activo=true`.  
-- Cada categoría puede tener una **descripción** opcional que detalla su contenido o tipo de productos asociados.

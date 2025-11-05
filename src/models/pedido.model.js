@@ -1,8 +1,5 @@
 import { db } from '../config/db.config.js'
 import { DataTypes } from 'sequelize'
-import { Usuario } from './usuario.model.js'
-import { MetodoPago } from './metodo_pago.model.js'
-import { EstadoPedido } from './estado_pedido.model.js'
 
 export const Pedido = db.define('Pedido', {
   id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
@@ -16,8 +13,3 @@ export const Pedido = db.define('Pedido', {
   tableName: 'pedidos',
   timestamps: false
 })
-
-Pedido.belongsTo(Usuario, { foreignKey: 'id_cliente', as: 'cliente' })
-Pedido.belongsTo(Usuario, { foreignKey: 'id_repartidor', as: 'repartidor' })
-Pedido.belongsTo(MetodoPago, { foreignKey: 'metodo_pago', as: 'metodoPago' })
-Pedido.belongsTo(EstadoPedido, { foreignKey: 'estado', as: 'estadoPedido' })

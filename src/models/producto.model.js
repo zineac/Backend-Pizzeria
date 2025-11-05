@@ -1,6 +1,5 @@
 import { db } from '../config/db.config.js'
 import { DataTypes } from 'sequelize'
-import { Categoria } from './categoria.model.js'
 
 export const Producto = db.define('Producto', {
   id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
@@ -14,5 +13,3 @@ export const Producto = db.define('Producto', {
   tableName: 'productos',
   timestamps: false
 })
-
-Producto.belongsTo(Categoria, { foreignKey: 'id_categoria', as: 'categoria' })

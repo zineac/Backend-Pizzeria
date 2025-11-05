@@ -1,8 +1,5 @@
 import { db } from '../config/db.config.js'
 import { DataTypes } from 'sequelize'
-import { DetallePedido } from './detalle_pedido.model.js'
-import { Tamano } from './tamano.model.js'
-import { Ingrediente } from './ingrediente.model.js'
 
 export const PedidoDetallePersonalizacion = db.define('PedidoDetallePersonalizacion', {
   id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
@@ -15,7 +12,3 @@ export const PedidoDetallePersonalizacion = db.define('PedidoDetallePersonalizac
   tableName: 'pedido_detalle_personalizacion',
   timestamps: false
 })
-
-PedidoDetallePersonalizacion.belongsTo(DetallePedido, { foreignKey: 'id_detalle_pedido', as: 'detallePedido' })
-PedidoDetallePersonalizacion.belongsTo(Tamano, { foreignKey: 'id_tamano', as: 'tamano' })
-PedidoDetallePersonalizacion.belongsTo(Ingrediente, { foreignKey: 'id_ingrediente', as: 'ingrediente' })

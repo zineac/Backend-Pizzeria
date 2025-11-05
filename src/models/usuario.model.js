@@ -1,6 +1,5 @@
 import { db } from '../config/db.config.js'
 import { DataTypes } from 'sequelize'
-import { Rol } from './rol.model.js'
 
 export const Usuario = db.define('Usuario', {
   id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
@@ -16,5 +15,3 @@ export const Usuario = db.define('Usuario', {
   tableName: 'usuarios',
   timestamps: false
 })
-
-Usuario.belongsTo(Rol, { foreignKey: 'id_rol', as: 'rol' })

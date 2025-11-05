@@ -8,6 +8,7 @@ import productoRoutes from './routes/producto.routes.js'
 import rolRoutes from './routes/rol.routes.js'
 import pagoRoutes from './routes/pago.routes.js'
 import estadoRoutes from './routes/estado.routes.js'
+import categoriaRoutes from './routes/categoria.routes.js'
 
 const app = express()
 
@@ -23,5 +24,6 @@ app.use('/api/producto', productoRoutes)
 app.use('/api/rol', rolRoutes)
 app.use('/api/pago', pagoRoutes)
 app.use('/api/estado', estadoRoutes)
+app.use('/api/categoria', categoriaRoutes)
 
 export default app

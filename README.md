@@ -155,3 +155,28 @@ Cada pedido posee un estado que indica su progreso (por ejemplo: *Pendiente*, *E
 > - Los estados inactivos se mantienen en la base de datos para preservar el historial de pedidos previos.
 > - Los filtros (`nombre`, `activo`) se envían como **query params**, por ejemplo:  
 >   `/api/estado?nombre=pendiente&activo=true`.
+
+
+## 🗂️ Rutas de Categorías (`/api/categoria`)
+
+Rutas para la gestión de las **categorías** de productos en el sistema.  
+Cada categoría puede estar activa o inactiva.  
+
+- **ADMINISTRADOR** tiene acceso total (crear, actualizar, eliminar, ver activas e inactivas).  
+- **PERSONAL** puede listar y ver categorías activas e inactivas.  
+- **CLIENTE** y **REPARTIDOR** solo pueden ver categorías activas.  
+
+| Método | Endpoint | Descripción | Roles Permitidos | Parámetros Obligatorios | Parámetros Opcionales |
+|:--------|:----------|:-------------|:------------------|:------------------------|:----------------------|
+| **GET** | `/api/categoria` | Lista todas las categorías disponibles. | `ADMINISTRADOR`, `PERSONAL`, `CLIENTE`, `REPARTIDOR` | — | `nombre`, `activo` (`true/false`) |
+| **GET** | `/api/categoria/:id` | Obtiene los datos de una categoría específica. | `ADMINISTRADOR`, `PERSONAL`, `CLIENTE`, `REPARTIDOR` | `id` | — |
+| **POST** | `/api/categoria` | Crea una nueva categoría. | `ADMINISTRADOR` | `nombre` | `descripcion` |
+| **PUT** | `/api/categoria/:id` | Actualiza la información de una categoría existente. | `ADMINISTRADOR` | `id` | `nombre`, `descripcion`, `activo` (`true/false`) |
+| **DELETE** | `/api/categoria/:id` | Desactiva una categoría (borrado lógico: `activo = false`). | `ADMINISTRADOR` | `id` | — |
+
+### **Notas:**
+
+- Las **categorías inactivas (`activo = false`)** no son visibles para `CLIENTE` ni `REPARTIDOR`.  
+- El **borrado lógico** evita eliminar categorías del historial de productos, simplemente se marca como inactiva.  
+- Los filtros en `GET /api/categoria` se envían como **query params**, por ejemplo: `/api/categoria?nombre=pizza&activo=true`.  
+- Cada categoría puede tener una **descripción** opcional que detalla su contenido o tipo de productos asociados.

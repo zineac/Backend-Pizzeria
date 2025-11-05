@@ -1,0 +1,52 @@
+### Obtener categorías
+# Lista todas las categorías disponibles.
+# Accesible para cualquier usuario autenticado.
+# - ADMINISTRADOR y PERSONAL pueden ver activas e inactivas.
+# - CLIENTE y REPARTIDOR solo verán las activas.
+# Parámetros opcionales (query): nombre, activo (true/false)
+GET http://localhost:8000/api/categoria
+
+###
+
+### Obtener categoría por ID
+# Devuelve los datos de una categoría específica.
+# Accesible para cualquier usuario autenticado.
+# CLIENTE y REPARTIDOR no pueden acceder a categorías inactivas.
+GET http://localhost:8000/api/categoria/2
+
+###
+
+### Crear nueva categoría
+# Crea una nueva categoría en el sistema.
+# Solo accesible para ADMINISTRADOR.
+# Parámetros requeridos: nombre
+# Parámetros opcionales: descripcion
+POST http://localhost:8000/api/categoria
+Content-Type: application/json
+
+{
+  "nombre": "Pizzas",
+  "descripcion": "Categoría de pizzas clásicas y gourmet"
+}
+
+###
+
+### Actualizar categoría
+# Actualiza la información de una categoría existente.
+# Solo accesible para ADMINISTRADOR.
+# Parámetros opcionales: nombre, descripcion, activo (true/false)
+PUT http://localhost:8000/api/categoria/5
+Content-Type: application/json
+
+{
+  "nombre": "Pizzas Gourmet",
+  "descripcion": "Pizzas con ingredientes selectos",
+  "activo": true
+}
+
+###
+
+### Desactivar categoría (borrado lógico)
+# Marca la categoría como inactiva (activo = false).
+# Solo accesible para ADMINISTRADOR.
+DELETE http://localhost:8000/api/categoria/5

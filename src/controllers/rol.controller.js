@@ -32,12 +32,14 @@ export const createRol = async (req, res) => {
 
 export const updateRol = async (req, res) => {
   const { id } = req.params
-  const { nombre } = req.body
+  const { nombre, activo } = req.body
   try {
     const rol = await Rol.findByPk(id)
     if (!rol) return res.status(404).json({ mensaje: 'Rol no encontrado' })
 
     rol.nombre = nombre ?? rol.nombre
+    if (activo !== undefined) rol.activo = activo
+
     await rol.save()
     res.json({ mensaje: 'Rol actualizado', rol })
   } catch (error) {
@@ -51,9 +53,10 @@ export const deleteRol = async (req, res) => {
     const rol = await Rol.findByPk(id)
     if (!rol) return res.status(404).json({ mensaje: 'Rol no encontrado' })
 
-    await rol.destroy()
-    res.json({ mensaje: 'Rol eliminado correctamente' })
+    rol.activo = false
+    await rol.save()
+    res.json({ mensaje: 'Rol desactivado correctamente' })
   } catch (error) {
-    res.status(500).json({ mensaje: 'Error al eliminar rol', error: error.message })
+    res.status(500).json({ mensaje: 'Error al desactivar rol', error: error.message })
   }
 }

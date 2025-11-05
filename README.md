@@ -76,12 +76,35 @@ Cada categoría puede estar activa o inactiva.
 | **PUT** | `/api/categoria/:id` | Actualiza la información de una categoría existente. | `ADMINISTRADOR` | `id` | `nombre`, `descripcion`, `activo` (`true/false`) |
 | **DELETE** | `/api/categoria/:id` | Desactiva una categoría (borrado lógico: `activo = false`). | `ADMINISTRADOR` | `id` | — |
 
-### **Notas:**
+> ### **Notas:**
+> - Las **categorías inactivas (`activo = false`)** no son visibles para `CLIENTE` ni `REPARTIDOR`.  
+> - El **borrado lógico** evita eliminar categorías del historial de productos, simplemente se marca como inactiva.  
+> - Los filtros en `GET /api/categoria` se envían como **query params**, por ejemplo: `/api/categoria?nombre=pizza&activo=true`.  
+> - Cada categoría puede tener una **descripción** opcional que detalla su contenido o tipo de productos asociados.
 
-- Las **categorías inactivas (`activo = false`)** no son visibles para `CLIENTE` ni `REPARTIDOR`.  
-- El **borrado lógico** evita eliminar categorías del historial de productos, simplemente se marca como inactiva.  
-- Los filtros en `GET /api/categoria` se envían como **query params**, por ejemplo: `/api/categoria?nombre=pizza&activo=true`.  
-- Cada categoría puede tener una **descripción** opcional que detalla su contenido o tipo de productos asociados.
+
+## 📏 Rutas de Tamaños (`/api/tamano`)
+
+Rutas para la gestión de los **tamaños de los productos** (por ejemplo, *Pequeña*, *Mediana*, *Grande*).  
+Cada tamaño tiene un **factor de precio** que multiplica el valor base del producto y puede estar **activo o inactivo**.  
+
+- **ADMINISTRADOR** tiene acceso total (crear, actualizar, eliminar, ver activos e inactivos).  
+- **PERSONAL** puede listar y ver tamaños activos e inactivos.  
+- **CLIENTE** y **REPARTIDOR** solo pueden ver tamaños activos.  
+
+| Método | Endpoint | Descripción | Roles Permitidos | Parámetros Obligatorios | Parámetros Opcionales |
+|:--------|:----------|:-------------|:------------------|:------------------------|:----------------------|
+| **GET** | `/api/tamano` | Lista todos los tamaños disponibles. | `ADMINISTRADOR`, `PERSONAL`, `CLIENTE`, `REPARTIDOR` | — | `nombre`, `activo` (`true/false`) |
+| **GET** | `/api/tamano/:id` | Obtiene los datos de un tamaño específico. | `ADMINISTRADOR`, `PERSONAL`, `CLIENTE`, `REPARTIDOR` | `id` | — |
+| **POST** | `/api/tamano` | Crea un nuevo tamaño. | `ADMINISTRADOR` | `nombre`, `factor_precio` | `activo` (`true/false`) |
+| **PUT** | `/api/tamano/:id` | Actualiza la información de un tamaño existente. | `ADMINISTRADOR` | `id` | `nombre`, `factor_precio`, `activo` (`true/false`) |
+| **DELETE** | `/api/tamano/:id` | Desactiva un tamaño (borrado lógico: `activo = false`). | `ADMINISTRADOR` | `id` | — |
+
+> ### **Notas:**
+> - Los **tamaños inactivos (`activo = false`)** no son visibles para `CLIENTE` ni `REPARTIDOR`.  
+> - El **campo `factor_precio`** es un multiplicador decimal que ajusta el precio base del producto según el tamaño.  
+> - El **borrado lógico** evita eliminar tamaños del historial de pedidos; simplemente se marca como inactivo.  
+> - Los filtros en `GET /api/tamano` se envían como **query params**, por ejemplo: `/api/tamano?nombre=Mediana&activo=true`.
 
 
 ## 🍕 Rutas de Productos (`/api/producto`)
@@ -104,14 +127,13 @@ Cada producto pertenece a una **categoría** y puede estar marcado como **person
 | **POST** | `/api/producto/:id/ingrediente` | Agrega varios ingredientes a un producto existente. | `ADMINISTRADOR`, `PERSONAL` | `id`, `ingredientes` (array de IDs) | — |
 | **DELETE** | `/api/producto/:id/ingrediente/:idIng` | Elimina un ingrediente específico de un producto. | `ADMINISTRADOR`, `PERSONAL` | `id`, `idIng` | — |
 
-### **Notas:**
-
-- Los **productos inactivos (`activo = false`)** no son visibles para `CLIENTE` ni `REPARTIDOR`.  
-- El **campo `personalizable`** indica si el cliente puede modificar sus ingredientes al realizar un pedido.  
-- El **borrado lógico** evita eliminar productos del historial: simplemente se marca como inactivo.  
-- Los filtros en `GET /api/producto` se envían como **query params**, por ejemplo: `/api/producto?nombre=pizza&id_categoria=1&personalizable=true&activo=true`.  
-- Las relaciones entre productos e ingredientes se gestionan mediante las rutas `/api/producto/:id/ingrediente`, que permiten **listar**, **agregar** o **eliminar** ingredientes vinculados a un producto.  
-- Cada producto está asociado a una **categoría** mediante el campo `id_categoria`.  
+> ### **Notas:**
+> - Los **productos inactivos (`activo = false`)** no son visibles para `CLIENTE` ni `REPARTIDOR`.  
+> - El **campo `personalizable`** indica si el cliente puede modificar sus ingredientes al realizar un pedido.  
+> - El **borrado lógico** evita eliminar productos del historial: simplemente se marca como inactivo.  
+> - Los filtros en `GET /api/producto` se envían como **query params**, por ejemplo: `/api/producto?nombre=pizza&id_categoria=1&personalizable=true&activo=true`.  
+> - Las relaciones entre productos e ingredientes se gestionan mediante las rutas `/api/producto/:id/ingrediente`, que permiten **listar**, **agregar** o **eliminar** ingredientes vinculados a un producto.  
+> - Cada producto está asociado a una **categoría** mediante el campo `id_categoria`.  
 
 
 ## 🌿 Rutas de Ingredientes (`/api/ingrediente`)

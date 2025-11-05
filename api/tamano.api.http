@@ -1,0 +1,52 @@
+### Obtener tamaños
+# Lista todos los tamaños disponibles.
+# Accesible para cualquier usuario autenticado.
+# - ADMINISTRADOR y PERSONAL pueden ver activos e inactivos.
+# - CLIENTE y REPARTIDOR solo verán los activos.
+# Parámetros opcionales (query): nombre, activo (true/false)
+GET http://localhost:8000/api/tamano
+
+###
+
+### Obtener tamaño por ID
+# Devuelve los datos de un tamaño específico.
+# Accesible para cualquier usuario autenticado.
+# CLIENTE y REPARTIDOR no pueden acceder a tamaños inactivos.
+GET http://localhost:8000/api/tamano/2
+
+###
+
+### Crear nuevo tamaño
+# Crea un nuevo tamaño en el sistema.
+# Solo accesible para ADMINISTRADOR.
+# Parámetros requeridos: nombre, factor_precio
+# Parámetros opcionales: activo (true/false)
+POST http://localhost:8000/api/tamano
+Content-Type: application/json
+
+{
+  "nombre": "Mediana",
+  "factor_precio": 1.5
+}
+
+###
+
+### Actualizar tamaño
+# Actualiza la información de un tamaño existente.
+# Solo accesible para ADMINISTRADOR.
+# Parámetros opcionales: nombre, factor_precio, activo (true/false)
+PUT http://localhost:8000/api/tamano/4
+Content-Type: application/json
+
+{
+  "nombre": "Grande",
+  "factor_precio": 2.0,
+  "activo": true
+}
+
+###
+
+### Desactivar tamaño (borrado lógico)
+# Marca el tamaño como inactivo (activo = false).
+# Solo accesible para ADMINISTRADOR.
+DELETE http://localhost:8000/api/tamano/4

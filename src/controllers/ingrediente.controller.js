@@ -4,7 +4,6 @@ import { Op } from 'sequelize'
 
 export const getIngredientes = async (req, res) => {
   try {
-    console.log(req.user)
     const { nombre, activo } = req.query
     const whereClause = {}
 

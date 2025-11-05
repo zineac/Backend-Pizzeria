@@ -7,16 +7,16 @@ INSERT INTO roles (nombre) VALUES
 ('cliente'),
 ('repartidor'),
 ('personal'),
-('administrador')
+('administrador');
 
 -- =================================
 -- Usuarios de ejemplo
 -- =================================
 INSERT INTO usuarios (nombre, email, password, telefono, direccion, id_rol, activo) VALUES
-('Carlos Admin', 'admin@pizzeria.com', 'admin123', '555-111', 'Calle Central 123', 4, true),
-('Lucía López', 'lucia@example.com', 'cliente123', '555-222', 'Av. Las Flores 456', 1, true),
-('Pedro Repartidor', 'pedro@example.com', 'repartidor123', '555-333', 'Zona Norte 789', 2, true),
-('Ana Personal', 'ana@pizzeria.com', 'personal123', '555-444', 'Calle Secundaria 321', 3, true);
+('Carlos Admin', 'admin@pizzeria.com', 'admin123', '555-111', 'Calle Central 123', 4, TRUE),
+('Lucía López', 'lucia@example.com', 'cliente123', '555-222', 'Av. Las Flores 456', 1, TRUE),
+('Pedro Repartidor', 'pedro@example.com', 'repartidor123', '555-333', 'Zona Norte 789', 2, TRUE),
+('Ana Personal', 'ana@pizzeria.com', 'personal123', '555-444', 'Calle Secundaria 321', 3, TRUE);
 
 -- =================================
 -- Métodos de pago
@@ -44,6 +44,14 @@ INSERT INTO tamanos (nombre, factor_precio) VALUES
 ('Familiar', 1.50);
 
 -- =================================
+-- Categorías
+-- =================================
+INSERT INTO categorias (nombre, descripcion) VALUES
+('Pizza', 'Pizzas artesanales personalizables'),
+('Bebida', 'Refrescos, aguas y jugos'),
+('Postre', 'Postres dulces y complementos');
+
+-- =================================
 -- Ingredientes
 -- =================================
 INSERT INTO ingredientes (nombre, costo_extra, stock, activo) VALUES
@@ -56,15 +64,22 @@ INSERT INTO ingredientes (nombre, costo_extra, stock, activo) VALUES
 ('Aceitunas', 0.50, 60, TRUE);
 
 -- =================================
--- Productos (pizzas base)
+-- Productos
 -- =================================
-INSERT INTO productos (nombre, descripcion, precio, activo) VALUES
-('Pizza Margarita', 'Clásica con queso mozzarella y tomate', 7.50, TRUE),
-('Pizza Hawaiana', 'Con jamón y piña', 8.50, TRUE),
-('Pizza Pepperoni', 'Clásica con extra pepperoni', 9.00, TRUE);
+-- id_categoria:
+-- 1 = Pizza
+-- 2 = Bebida
+-- 3 = Postre
+INSERT INTO productos (nombre, descripcion, precio, id_categoria, personalizable, activo) VALUES
+('Pizza Margarita', 'Clásica con queso mozzarella y tomate', 7.50, 1, TRUE, TRUE),
+('Pizza Hawaiana', 'Con jamón y piña', 8.50, 1, TRUE, TRUE),
+('Pizza Pepperoni', 'Clásica con extra pepperoni', 9.00, 1, TRUE, TRUE),
+('Refresco Coca-Cola', 'Bebida gaseosa 355ml', 1.50, 2, FALSE, TRUE),
+('Agua mineral', 'Botella 500ml', 1.00, 2, FALSE, TRUE),
+('Brownie', 'Postre de chocolate', 2.00, 3, FALSE, TRUE);
 
 -- =================================
--- Ingredientes base por producto
+-- Ingredientes base por producto (solo pizzas)
 -- =================================
 -- Margarita
 INSERT INTO producto_ingredientes (id_producto, id_ingrediente) VALUES
@@ -84,14 +99,6 @@ INSERT INTO producto_ingredientes (id_producto, id_ingrediente) VALUES
 (3, 5);
 
 -- =================================
--- Complementos
--- =================================
-INSERT INTO complementos (nombre, descripcion, precio, stock, categoria, activo) VALUES
-('Refresco Coca-Cola', 'Bebida gaseosa 355ml', 1.50, 100, 'Bebida', TRUE),
-('Brownie', 'Postre de chocolate', 2.00, 40, 'Postre', TRUE),
-('Agua mineral', 'Botella 500ml', 1.00, 80, 'Bebida', TRUE);
-
--- =================================
 -- Pedido de ejemplo
 -- =================================
 INSERT INTO pedidos (id_cliente, id_repartidor, metodo_pago, estado, total)
@@ -99,13 +106,11 @@ VALUES (2, 3, 1, 2, 20.00);
 
 -- Detalle del pedido
 INSERT INTO detalle_pedido (id_pedido, id_producto, cantidad, precio_unitario)
-VALUES (1, 1, 1, 7.50),
-       (1, 3, 1, 9.00);
+VALUES 
+(1, 1, 1, 7.50),  -- Pizza Margarita
+(1, 3, 1, 9.00),  -- Pizza Pepperoni
+(1, 4, 2, 1.50);  -- Refresco Coca-Cola
 
 -- Personalización: pizza margarita con extra pepperoni
 INSERT INTO pedido_detalle_personalizacion (id_detalle_pedido, id_tamano, id_ingrediente, cantidad, costo_extra)
 VALUES (1, 2, 5, 1, 1.00);
-
--- Complemento en el pedido
-INSERT INTO detalle_complemento (id_pedido, id_complemento, cantidad, precio_unitario)
-VALUES (1, 1, 2, 1.50);

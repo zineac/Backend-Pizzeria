@@ -81,28 +81,32 @@ Rutas para gestionar los **ingredientes** disponibles en la pizzería.
 
 ## 🍕 Rutas de Productos (`/api/producto`)
 
-Rutas para la gestión de los **productos** (por ejemplo, pizzas) del sistema.  
+Rutas para la gestión de los **productos** del sistema (por ejemplo, pizzas, bebidas o postres).  
+Cada producto pertenece a una **categoría** y puede estar marcado como **personalizable**, lo que permite agregar o quitar ingredientes al momento de armar el pedido.
+
 - **ADMINISTRADOR** tiene acceso total (crear, actualizar, eliminar, ver activos e inactivos).  
 - **PERSONAL** puede listar, ver y actualizar productos activos e inactivos.  
 - **CLIENTE** y **REPARTIDOR** solo pueden ver productos activos.  
 
 | Método | Endpoint | Descripción | Roles Permitidos | Parámetros Obligatorios | Parámetros Opcionales |
 |:--------|:----------|:-------------|:------------------|:------------------------|:----------------------|
-| **GET** | `/api/producto` | Lista todos los productos disponibles. | `ADMINISTRADOR`, `PERSONAL`, `CLIENTE`, `REPARTIDOR` | — | `nombre`, `activo` (`true/false`) |
-| **GET** | `/api/producto/:id` | Obtiene los datos de un producto por su `id`. | `ADMINISTRADOR`, `PERSONAL`, `CLIENTE`, `REPARTIDOR` | `id` | — |
-| **POST** | `/api/producto` | Crea un nuevo producto. | `ADMINISTRADOR` | `nombre`, `precio` | `descripcion`, `activo` |
-| **PUT** | `/api/producto/:id` | Actualiza los datos de un producto existente. | `ADMINISTRADOR`, `PERSONAL` | `id` | `nombre`, `descripcion`, `precio`, `activo` |
+| **GET** | `/api/producto` | Lista todos los productos disponibles. | `ADMINISTRADOR`, `PERSONAL`, `CLIENTE`, `REPARTIDOR` | — | `nombre`, `activo` (`true/false`), `id_categoria`, `personalizable` (`true/false`) |
+| **GET** | `/api/producto/:id` | Obtiene los datos de un producto específico (incluye su categoría). | `ADMINISTRADOR`, `PERSONAL`, `CLIENTE`, `REPARTIDOR` | `id` | — |
+| **POST** | `/api/producto` | Crea un nuevo producto en el sistema. | `ADMINISTRADOR` | `nombre`, `precio`, `id_categoria` | `descripcion`, `personalizable` (`true/false`), `activo` (`true/false`) |
+| **PUT** | `/api/producto/:id` | Actualiza la información de un producto existente. | `ADMINISTRADOR`, `PERSONAL` | `id` | `nombre`, `descripcion`, `precio`, `id_categoria`, `personalizable`, `activo` |
 | **DELETE** | `/api/producto/:id` | Desactiva un producto (borrado lógico: `activo = false`). | `ADMINISTRADOR` | `id` | — |
 | **GET** | `/api/producto/:id/ingrediente` | Lista los ingredientes asociados a un producto. | `ADMINISTRADOR`, `PERSONAL`, `CLIENTE`, `REPARTIDOR` | `id` | — |
-| **POST** | `/api/producto/:id/ingrediente` | Agrega uno o varios ingredientes a un producto existente. | `ADMINISTRADOR`, `PERSONAL` | `id`, `ingredientes` (array de IDs) | — |
+| **POST** | `/api/producto/:id/ingrediente` | Agrega varios ingredientes a un producto existente. | `ADMINISTRADOR`, `PERSONAL` | `id`, `ingredientes` (array de IDs) | — |
 | **DELETE** | `/api/producto/:id/ingrediente/:idIng` | Elimina un ingrediente específico de un producto. | `ADMINISTRADOR`, `PERSONAL` | `id`, `idIng` | — |
 
-> **Notas:**
-> - Los **productos inactivos (`activo = false`)** no son visibles para `CLIENTE` ni `REPARTIDOR`.  
-> - El campo `activo` es de tipo booleano (`true`/`false`).  
-> - Los filtros en `GET /api/producto` se envían como **query params** (ejemplo: `/api/producto?nombre=pizza&activo=true`).  
-> - Al eliminar un producto, este **no se borra físicamente**, solo se marca como inactivo.  
-> - Las relaciones con ingredientes se gestionan mediante las rutas `/api/producto/:id/ingrediente`.
+### **Notas:**
+
+- Los **productos inactivos (`activo = false`)** no son visibles para `CLIENTE` ni `REPARTIDOR`.  
+- El **campo `personalizable`** indica si el cliente puede modificar sus ingredientes al realizar un pedido.  
+- El **borrado lógico** evita eliminar productos del historial: simplemente se marca como inactivo.  
+- Los filtros en `GET /api/producto` se envían como **query params**, por ejemplo: `/api/producto?nombre=pizza&id_categoria=1&personalizable=true&activo=true`.  
+- Las relaciones entre productos e ingredientes se gestionan mediante las rutas `/api/producto/:id/ingrediente`, que permiten **listar**, **agregar** o **eliminar** ingredientes vinculados a un producto.  
+- Cada producto está asociado a una **categoría** mediante el campo `id_categoria`.  
 
 
 ## 💳 Rutas de Métodos de Pago (`/api/pago`)

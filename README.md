@@ -50,12 +50,13 @@ Rutas para gestionar los **roles** disponibles en el sistema.
 | **GET** | `/api/rol` | Lista todos los roles disponibles. | `ADMINISTRADOR` | — | — |
 | **GET** | `/api/rol/:id` | Obtiene los datos de un rol específico por su ID. | `ADMINISTRADOR` | `id` | — |
 | **POST** | `/api/rol` | Crea un nuevo rol en el sistema. | `ADMINISTRADOR` | `nombre` | — |
-| **PUT** | `/api/rol/:id` | Actualiza un rol existente. | `ADMINISTRADOR` | `id` | `nombre` |
-| **DELETE** | `/api/rol/:id` | Elimina un rol del sistema. | `ADMINISTRADOR` | `id` | — |
+| **PUT** | `/api/rol/:id` | Actualiza un rol existente (nombre y/o estado). | `ADMINISTRADOR` | `id` | `nombre`, `activo` (`true/false`) |
+| **DELETE** | `/api/rol/:id` | Desactiva un rol (borrado lógico: `activo = false`). | `ADMINISTRADOR` | `id` | — |
 
 > **Notas:**
 > - El campo `nombre` es obligatorio para crear un nuevo rol.  
 > - Todas las rutas requieren autenticación mediante **JWT** y verificación de rol `ADMINISTRADOR`.  
+> - El `DELETE` ahora realiza un **borrado lógico**, marcando el rol como inactivo en lugar de eliminarlo físicamente.  
 > - No hay rutas públicas para roles, ya que solo los administradores necesitan gestionarlos.
 
 

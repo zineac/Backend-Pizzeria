@@ -26,19 +26,20 @@ Content-Type: application/json
 ###
 
 ### Actualizar rol
-# Actualiza el nombre de un rol existente.
+# Actualiza el nombre y/o estado de un rol existente.
 # Solo accesible para ADMINISTRADOR.
-# Parámetros opcionales: nombre
+# Parámetros opcionales: nombre, activo (true/false)
 PUT http://localhost:8000/api/rol/6
 Content-Type: application/json
 
 {
-  "nombre": "desarrollador"
+  "nombre": "desarrollador",
+  "activo": true
 }
 
 ###
 
-### Eliminar rol
-# Elimina un rol específico del sistema.
+### Desactivar rol (borrado lógico)
+# Marca un rol como inactivo (activo = false)
 # Solo accesible para ADMINISTRADOR.
 DELETE http://localhost:8000/api/rol/6

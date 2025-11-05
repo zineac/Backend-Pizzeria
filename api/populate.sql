@@ -101,7 +101,7 @@ INSERT INTO producto_ingredientes (id_producto, id_ingrediente) VALUES
 -- =================================
 -- Pedido de ejemplo
 -- =================================
-INSERT INTO pedidos (id_cliente, id_repartidor, metodo_pago, estado, total)
+INSERT INTO pedidos (id_cliente, id_repartidor, id_metodo_pago, estado, total)
 VALUES (2, 3, 1, 2, 20.00);
 
 -- Detalle del pedido

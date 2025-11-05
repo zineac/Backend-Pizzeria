@@ -1,13 +1,16 @@
 import { Producto } from '../models/producto.model.js'
+import { Categoria } from '../models/categoria.model.js'
 import { ROLES } from '../config/roles.config.js'
 import { Op } from 'sequelize'
 
 export const getProductos = async (req, res) => {
   try {
-    const { nombre, activo } = req.query
+    const { nombre, activo, id_categoria: idCategoria, personalizable } = req.query
     const whereClause = {}
 
     if (nombre) whereClause.nombre = { [Op.like]: `%${nombre}%` }
+    if (idCategoria) whereClause.id_categoria = idCategoria
+    if (personalizable !== undefined) whereClause.personalizable = personalizable === 'true'
 
     if (req.user?.rol === ROLES.ADMINISTRADOR || req.user?.rol === ROLES.PERSONAL) {
       if (activo !== undefined) whereClause.activo = activo === 'true'
@@ -15,7 +18,10 @@ export const getProductos = async (req, res) => {
       whereClause.activo = true
     }
 
-    const productos = await Producto.findAll({ where: whereClause })
+    const productos = await Producto.findAll({
+      where: whereClause,
+      include: { model: Categoria, as: 'categoria' }
+    })
     res.json(productos)
   } catch (error) {
     res.status(500).json({ mensaje: 'Error al obtener productos', error: error.message })
@@ -25,7 +31,7 @@ export const getProductos = async (req, res) => {
 export const getProductoById = async (req, res) => {
   const { id } = req.params
   try {
-    const producto = await Producto.findByPk(id)
+    const producto = await Producto.findByPk(id, { include: { model: Categoria, as: 'categoria' } })
     if (!producto) return res.status(404).json({ mensaje: 'Producto no encontrado' })
 
     const puedeVerInactivos = [ROLES.ADMINISTRADOR, ROLES.PERSONAL].includes(req.user?.rol)
@@ -40,12 +46,14 @@ export const getProductoById = async (req, res) => {
 }
 
 export const createProducto = async (req, res) => {
-  const { nombre, descripcion, precio, activo } = req.body
+  const { nombre, descripcion, precio, id_categoria: idCategoria, personalizable, activo } = req.body
   try {
     const nuevoProducto = await Producto.create({
       nombre,
       descripcion,
       precio,
+      id_categoria: idCategoria,
+      personalizable: personalizable ?? false,
       activo: activo ?? true
     })
 
@@ -57,7 +65,7 @@ export const createProducto = async (req, res) => {
 
 export const updateProducto = async (req, res) => {
   const { id } = req.params
-  const { nombre, descripcion, precio, activo } = req.body
+  const { nombre, descripcion, precio, id_categoria: idCategoria, personalizable, activo } = req.body
   try {
     const producto = await Producto.findByPk(id)
     if (!producto) return res.status(404).json({ mensaje: 'Producto no encontrado' })
@@ -65,6 +73,8 @@ export const updateProducto = async (req, res) => {
     producto.nombre = nombre ?? producto.nombre
     producto.descripcion = descripcion ?? producto.descripcion
     producto.precio = precio ?? producto.precio
+    producto.id_categoria = idCategoria ?? producto.id_categoria
+    producto.personalizable = personalizable ?? producto.personalizable
     producto.activo = activo ?? producto.activo
 
     await producto.save()
@@ -91,10 +101,7 @@ export const deleteProducto = async (req, res) => {
 export const getIngredientesDeProducto = async (req, res) => {
   const { id } = req.params
   try {
-    const producto = await Producto.findByPk(id, {
-      include: { association: 'ingredientes' }
-    })
-
+    const producto = await Producto.findByPk(id, { include: { association: 'ingredientes' } })
     if (!producto) return res.status(404).json({ mensaje: 'Producto no encontrado' })
 
     const puedeVerInactivos = [ROLES.ADMINISTRADOR, ROLES.PERSONAL].includes(req.user?.rol)

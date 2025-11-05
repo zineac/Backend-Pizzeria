@@ -2,13 +2,13 @@
 # Lista todos los productos disponibles.
 # - ADMINISTRADOR y PERSONAL pueden ver productos activos e inactivos.
 # - CLIENTE y REPARTIDOR solo verán productos activos.
-# Parámetros opcionales (query): nombre, activo (true/false)
+# Parámetros opcionales (query): nombre, activo (true/false), id_categoria, personalizable (true/false)
 GET http://localhost:8000/api/producto
 
 ###
 
 ### Obtener producto por ID
-# Devuelve los datos de un producto específico.
+# Devuelve los datos de un producto específico (incluye su categoría).
 # CLIENTE y REPARTIDOR solo pueden acceder a productos activos.
 GET http://localhost:8000/api/producto/2
 
@@ -17,8 +17,8 @@ GET http://localhost:8000/api/producto/2
 ### Crear nuevo producto
 # Crea un nuevo producto en el sistema.
 # Solo accesible para ADMINISTRADOR.
-# Parámetros requeridos: nombre, precio
-# Parámetros opcionales: descripcion, activo
+# Parámetros requeridos: nombre, precio, id_categoria
+# Parámetros opcionales: descripcion, personalizable (bool), activo (bool)
 POST http://localhost:8000/api/producto
 Content-Type: application/json
 
@@ -26,6 +26,8 @@ Content-Type: application/json
   "nombre": "Pizza Napolitana",
   "descripcion": "Pizza con tomate, mozzarella y albahaca.",
   "precio": 12.99,
+  "id_categoria": 1,
+  "personalizable": true,
   "activo": true
 }
 
@@ -34,14 +36,16 @@ Content-Type: application/json
 ### Actualizar producto
 # Actualiza la información de un producto existente.
 # Accesible para ADMINISTRADOR y PERSONAL.
-# Parámetros opcionales: nombre, descripcion, precio, activo
+# Parámetros opcionales: nombre, descripcion, precio, id_categoria, personalizable, activo
 PUT http://localhost:8000/api/producto/2
 Content-Type: application/json
 
 {
   "nombre": "Pizza 4 Quesos",
   "precio": 14.50,
-  "descripcion": "Mozzarella, parmesano, gorgonzola y provolone."
+  "descripcion": "Mozzarella, parmesano, gorgonzola y provolone.",
+  "personalizable": true,
+  "id_categoria": 1
 }
 
 ###

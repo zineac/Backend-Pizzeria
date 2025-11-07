@@ -206,3 +206,20 @@ Cada pedido posee un estado que indica su progreso (por ejemplo: *Pendiente*, *E
 > - Los estados inactivos se mantienen en la base de datos para preservar el historial de pedidos previos.
 > - Los filtros (`nombre`, `activo`) se envían como **query params**, por ejemplo:  
 >   `/api/estado?nombre=pendiente&activo=true`.
+
+
+## 🍽️ Rutas de Pedidos (`/api/pedido`)
+
+| Método | Endpoint | Descripción | Roles Permitidos | Parámetros Obligatorios | Parámetros Opcionales |
+|:--------|:---------|:------------|:-----------------|:-----------------------|:--------------------|
+| **GET** | `/api/pedido` | Lista todos los pedidos. CLIENTE ve solo los suyos, REPARTIDOR solo los asignados. | `ADMINISTRADOR`, `PERSONAL`, `REPARTIDOR`, `CLIENTE` | — | — |
+| **GET** | `/api/pedido/:id` | Obtiene un pedido específico. CLIENTE solo puede acceder a sus pedidos. | `ADMINISTRADOR`, `PERSONAL`, `REPARTIDOR`, `CLIENTE` | `id` | — |
+| **POST** | `/api/pedido` | Crea un nuevo pedido con sus detalles y personalizaciones. | `ADMINISTRADOR`, `PERSONAL`, `CLIENTE` | `id_cliente`, `id_metodo_pago`, `detalles[]` | `id_repartidor` |
+| **PUT** | `/api/pedido/:id/estado` | Actualiza el estado de un pedido (por ejemplo: Pendiente, En preparación, Entregado). | `ADMINISTRADOR`, `PERSONAL`, `REPARTIDOR` | `id` | `id_estado` |
+| **DELETE** | `/api/pedido/:id` | Desactiva un pedido (borrado lógico: `activo = false`). | `ADMINISTRADOR` | `id` | — |
+
+> ### **Notas**
+> - Los pedidos inactivos (`activo = false`) no deben ser visibles para CLIENTE ni REPARTIDOR.
+> - La creación de pedidos permite enviar detalles con productos, cantidades, tamaños y personalizaciones de ingredientes.
+> - Para GET `/api/pedido`, los roles CLIENTE y REPARTIDOR deben filtrar automáticamente los pedidos según su relación.
+> - El borrado lógico evita eliminar registros históricos del sistema; simplemente se marca como inactivo.

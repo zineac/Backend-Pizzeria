@@ -1,7 +1,23 @@
 import { Producto } from '../models/producto.model.js'
 import { Categoria } from '../models/categoria.model.js'
+import { Ingrediente } from '../models/ingrediente.model.js'
 import { ROLES } from '../config/roles.config.js'
 import { Op } from 'sequelize'
+
+export const calcularPrecioReal = (producto, tamano = { nombre: 'Mediana', factor_precio: 1.20 }) => {
+  if (!producto) return 0
+  const precioBase = Number(producto.precio) || 0
+  if (!producto.personalizable) return Number(precioBase.toFixed(2))
+
+  const ingredientes = producto.ingredientes || []
+  const costoIngredientes = ingredientes
+    .filter(i => i?.activo !== false)
+    .reduce((acc, i) => acc + Number(i.costo_extra || 0), 0)
+
+  const total = (precioBase + costoIngredientes) * Number(tamano.factor_precio)
+
+  return Number(total.toFixed(2))
+}
 
 export const getProductos = async (req, res) => {
   try {
@@ -20,9 +36,19 @@ export const getProductos = async (req, res) => {
 
     const productos = await Producto.findAll({
       where: whereClause,
-      include: { model: Categoria, as: 'categoria' }
+      include: [
+        { model: Categoria, as: 'categoria' },
+        { model: Ingrediente, as: 'ingredientes' }
+      ]
     })
-    res.json(productos)
+
+    const productosConPrecio = productos.map(p => {
+      const data = p.toJSON()
+      data.precioReal = calcularPrecioReal(data)
+      return data
+    })
+
+    res.json(productosConPrecio)
   } catch (error) {
     res.status(500).json({ mensaje: 'Error al obtener productos', error: error.message })
   }
@@ -31,7 +57,13 @@ export const getProductos = async (req, res) => {
 export const getProductoById = async (req, res) => {
   const { id } = req.params
   try {
-    const producto = await Producto.findByPk(id, { include: { model: Categoria, as: 'categoria' } })
+    const producto = await Producto.findByPk(id, {
+      include: [
+        { model: Categoria, as: 'categoria' },
+        { model: Ingrediente, as: 'ingredientes' }
+      ]
+    })
+
     if (!producto) return res.status(404).json({ mensaje: 'Producto no encontrado' })
 
     const puedeVerInactivos = [ROLES.ADMINISTRADOR, ROLES.PERSONAL].includes(req.user?.rol)
@@ -39,7 +71,10 @@ export const getProductoById = async (req, res) => {
       return res.status(403).json({ mensaje: 'No tienes permiso para ver este producto' })
     }
 
-    res.json(producto)
+    const data = producto.toJSON()
+    data.precioReal = calcularPrecioReal(data)
+
+    res.json(data)
   } catch (error) {
     res.status(500).json({ mensaje: 'Error al obtener el producto', error: error.message })
   }

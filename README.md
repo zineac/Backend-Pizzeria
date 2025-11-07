@@ -210,6 +210,19 @@ Cada pedido posee un estado que indica su progreso (por ejemplo: *Pendiente*, *E
 
 ## 🍽️ Rutas de Pedidos (`/api/pedido`)
 
+Rutas para gestionar los **pedidos** del sistema.  
+Cada pedido está compuesto por un **cliente**, un **método de pago**, y una lista de **detalles** (productos con cantidad, tamaño y posibles personalizaciones).  
+
+- **ADMINISTRADOR** tiene acceso total (crear, actualizar, eliminar, ver todos los pedidos).  
+- **PERSONAL** puede crear y actualizar pedidos, así como ver todos los pedidos activos e inactivos.  
+- **REPARTIDOR** solo puede ver y actualizar los pedidos **asignados a él**.  
+- **CLIENTE** solo puede ver y crear sus **propios pedidos activos**.  
+
+Los pedidos incluyen detalles y personalizaciones:
+- Cada **detalle** contiene un producto y su cantidad.  
+- La **personalización** puede incluir el tamaño (`id_tamano`) y una lista de ingredientes adicionales o removidos.  
+- El **borrado lógico** marca un pedido como inactivo sin eliminarlo del historial.  
+
 | Método | Endpoint | Descripción | Roles Permitidos | Parámetros Obligatorios | Parámetros Opcionales |
 |:--------|:---------|:------------|:-----------------|:-----------------------|:--------------------|
 | **GET** | `/api/pedido` | Lista todos los pedidos. CLIENTE ve solo los suyos, REPARTIDOR solo los asignados. | `ADMINISTRADOR`, `PERSONAL`, `REPARTIDOR`, `CLIENTE` | — | — |

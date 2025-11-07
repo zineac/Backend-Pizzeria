@@ -1,0 +1,83 @@
+### Obtener pedidos
+# Lista todos los pedidos registrados.
+# - ADMINISTRADOR y PERSONAL: pueden ver todos los pedidos.
+# - REPARTIDOR: solo ve los pedidos asignados a él.
+# - CLIENTE: solo ve sus propios pedidos.
+# Sin parámetros adicionales.
+GET http://localhost:8000/api/pedido
+
+### Obtener pedido por ID
+# Devuelve la información completa de un pedido (cliente, detalles, personalizaciones, etc.)
+# Acceso total para ADMINISTRADOR y PERSONAL 
+# Acceso parcial para REPARTIDOR y CLIENTE (solo si es suyo)
+# Parámetros requeridos: id (en la URL)
+# Parámetros opcionales: ninguno
+GET http://localhost:8000/api/pedido/6
+Content-Type: application/json
+
+### Crear nuevo pedido
+# Crea un nuevo pedido con sus detalles y personalizaciones.
+# Accesible para CLIENTE, PERSONAL y ADMINISTRADOR.
+# Parámetros requeridos: id_cliente, id_metodo_pago, detalles[]
+# Parámetros opcionales: id_repartidor
+POST http://localhost:8000/api/pedido
+Content-Type: application/json
+
+{
+  "id_cliente": 6,
+  "id_repartidor": 3,
+  "id_metodo_pago": 1,
+  "detalles": [
+    {
+      "id_producto": 1,
+      "cantidad": 1,
+      "personalizaciones": {
+        "id_tamano": 2,
+        "ingredientes": [
+          { "id_ingrediente": 5, "cantidad": 1 },
+          { "id_ingrediente": 6, "cantidad": 2 }
+        ]
+      }
+    },
+    {
+      "id_producto": 2,
+      "cantidad": 1,
+      "personalizaciones": {
+        "id_tamano": 3,
+        "ingredientes": [
+          { "id_ingrediente": 7, "cantidad": 1 }
+        ]
+      }
+    },
+    {
+      "id_producto": 3,
+      "cantidad": 2,
+      "personalizaciones": {
+        "id_tamano": 1
+      }
+    },
+    {
+      "id_producto": 4,
+      "cantidad": 2
+    },
+    {
+      "id_producto": 5,
+      "cantidad": 1
+    },
+    {
+      "id_producto": 6,
+      "cantidad": 1
+    }
+  ]
+}
+
+### Actualizar estado de un pedido
+# Cambia el estado de un pedido (por ejemplo, Pendiente -> En camino -> Entregado)
+# Accesible para ADMINISTRADOR, PERSONAL y REPARTIDOR
+# Parámetros requeridos: id (en URL), id_estado (en body)
+PUT http://localhost:8000/api/pedido/6/estado
+Content-Type: application/json
+
+{
+  "id_estado": 5
+}

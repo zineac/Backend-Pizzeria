@@ -44,21 +44,21 @@ Usuario.hasMany(Pedido, { foreignKey: 'id_cliente', as: 'pedidosCliente' })
 Pedido.belongsTo(Usuario, { foreignKey: 'id_repartidor', as: 'repartidor' })
 Usuario.hasMany(Pedido, { foreignKey: 'id_repartidor', as: 'pedidosRepartidor' })
 
-Pedido.belongsTo(MetodoPago, { foreignKey: 'metodo_pago', as: 'metodoPago' })
-MetodoPago.hasMany(Pedido, { foreignKey: 'metodo_pago', as: 'pedidos' })
+Pedido.belongsTo(MetodoPago, { foreignKey: 'id_metodo_pago', as: 'metodoPago' })
+MetodoPago.hasMany(Pedido, { foreignKey: 'id_metodo_pago', as: 'pedidos' })
 
-Pedido.belongsTo(EstadoPedido, { foreignKey: 'estado', as: 'estadoPedido' })
-EstadoPedido.hasMany(Pedido, { foreignKey: 'estado', as: 'pedidos' })
+Pedido.belongsTo(EstadoPedido, { foreignKey: 'id_estado', as: 'estadoPedido' })
+EstadoPedido.hasMany(Pedido, { foreignKey: 'id_estado', as: 'pedidos' })
 
 // 5. PedidoDetallePersonalizacion -> DetallePedido, Tamano, Ingrediente
 PedidoDetallePersonalizacion.belongsTo(DetallePedido, { foreignKey: 'id_detalle_pedido', as: 'detallePedido' })
 DetallePedido.hasMany(PedidoDetallePersonalizacion, { foreignKey: 'id_detalle_pedido', as: 'personalizaciones' })
 
 PedidoDetallePersonalizacion.belongsTo(Tamano, { foreignKey: 'id_tamano', as: 'tamano' })
-Tamano.hasMany(PedidoDetallePersonalizacion, { foreignKey: 'id_tamano', as: 'personalizaciones' })
+Tamano.hasMany(PedidoDetallePersonalizacion, { foreignKey: 'id_tamano', as: 'personalizacionesTamano' })
 
 PedidoDetallePersonalizacion.belongsTo(Ingrediente, { foreignKey: 'id_ingrediente', as: 'ingrediente' })
-Ingrediente.hasMany(PedidoDetallePersonalizacion, { foreignKey: 'id_ingrediente', as: 'personalizaciones' })
+Ingrediente.hasMany(PedidoDetallePersonalizacion, { foreignKey: 'id_ingrediente', as: 'personalizacionesIngrediente' })
 
 // 6. Usuario -> Rol
 Usuario.belongsTo(Rol, { foreignKey: 'id_rol', as: 'rol' })

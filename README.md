@@ -236,3 +236,24 @@ Los pedidos incluyen detalles y personalizaciones:
 > - La creación de pedidos permite enviar detalles con productos, cantidades, tamaños y personalizaciones de ingredientes.
 > - Para GET `/api/pedido`, los roles CLIENTE y REPARTIDOR deben filtrar automáticamente los pedidos según su relación.
 > - El borrado lógico evita eliminar registros históricos del sistema; simplemente se marca como inactivo.
+
+
+## 🧠 Rutas de Sugerencias Personalizadas (`/api/sugerencia`)
+
+Rutas para obtener **recomendaciones inteligentes y personalizadas** basadas en el **historial de pedidos del cliente autenticado**.  
+- El sistema analiza los **productos más frecuentes**, las **categorías más consumidas**, y las **preferencias de ingredientes y tamaños** para generar sugerencias adaptadas al comportamiento del usuario.  
+- Si el cliente no tiene historial, se devuelven los **productos más populares** entre todos los usuarios del sistema.
+
+| Método | Endpoint | Descripción | Roles Permitidos | Parámetros Obligatorios | Parámetros Opcionales |
+|:--------|:----------|:-------------|:------------------|:------------------------|:----------------------|
+| **GET** | `/api/sugerencia` | Obtiene sugerencias inteligentes y personalizadas según el historial del cliente. Devuelve productos frecuentes, similares y preferencias de tamaño e ingrediente. Si no existe historial, retorna los productos más populares. | `CLIENTE` | — | — |
+
+> ### **Notas:**
+> - Requiere autenticación mediante la cookie `token`.  
+> - Analiza los **productos comprados**, los **ingredientes personalizados** y los **tamaños utilizados**.  
+> - El resultado puede incluir los siguientes campos:
+>   - `tipo`: Indica el tipo de recomendación (`personalizado`, `profundo` o `populares`).  
+>   - `frecuentes`: Productos más comprados por el cliente.  
+>   - `similares`: Productos de categorías similares a las de sus compras anteriores.  
+>   - `sugerenciasPersonalizadas`: Combinaciones adicionales o productos derivados del historial del cliente.  
+>   - `preferencia`: Muestra los ingredientes y tamaños más utilizados (`ingredienteFavorito`, `tamanoFavorito`, `combinacionFrecuente`).  

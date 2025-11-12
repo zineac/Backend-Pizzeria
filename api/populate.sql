@@ -30,10 +30,12 @@ INSERT INTO metodos_pago (tipo, descripcion) VALUES
 -- =================================
 INSERT INTO estados_pedido (nombre) VALUES
 ('Pendiente'),
+('Pagado'),
 ('Preparando'),
 ('En camino'),
 ('Entregado'),
-('Cancelado');
+('Cancelado'),
+('Rechazado');
 
 -- =================================
 -- Tamaños de pizza

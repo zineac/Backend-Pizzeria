@@ -234,6 +234,7 @@ Los pedidos incluyen detalles y personalizaciones:
 > ### **Notas**
 > - Los pedidos inactivos (`activo = false`) no deben ser visibles para CLIENTE ni REPARTIDOR.
 > - La creación de pedidos permite enviar detalles con productos, cantidades, tamaños y personalizaciones de ingredientes.
+> - El estado `"Pagado"` se asigna automáticamente cuando se recibe la notificación de pago desde Mercado Pago.
 > - Para GET `/api/pedido`, los roles CLIENTE y REPARTIDOR deben filtrar automáticamente los pedidos según su relación.
 > - El borrado lógico evita eliminar registros históricos del sistema; simplemente se marca como inactivo.
 

@@ -1,0 +1,76 @@
+@baseUrl = -
+
+### Registrar usuario
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "nombre": "Juan Perez",
+  "email": "juan@example2.com",
+  "password": "123456"
+}
+
+###
+
+### Iniciar sesión
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "juan@example2.com",
+  "password": "123456"
+}
+
+###
+
+### Crear nuevo pedido
+POST {{baseUrl}}/api/pedido
+Content-Type: application/json
+
+{
+  "id_cliente": 5,
+  "id_repartidor": 3,
+  "id_metodo_pago": 1,
+  "detalles": [
+    {
+      "id_producto": 1,
+      "cantidad": 1,
+      "personalizaciones": {
+        "id_tamano": 2,
+        "ingredientes": [
+          { "id_ingrediente": 5, "cantidad": 1 },
+          { "id_ingrediente": 6, "cantidad": 2 }
+        ]
+      }
+    },
+    {
+      "id_producto": 2,
+      "cantidad": 1,
+      "personalizaciones": {
+        "id_tamano": 3,
+        "ingredientes": [
+          { "id_ingrediente": 7, "cantidad": 1 }
+        ]
+      }
+    },
+    {
+      "id_producto": 3,
+      "cantidad": 2,
+      "personalizaciones": {
+        "id_tamano": 1
+      }
+    },
+    {
+      "id_producto": 4,
+      "cantidad": 2
+    },
+    {
+      "id_producto": 5,
+      "cantidad": 1
+    },
+    {
+      "id_producto": 6,
+      "cantidad": 1
+    }
+  ]
+}

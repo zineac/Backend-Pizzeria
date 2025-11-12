@@ -8,7 +8,11 @@ import { Tamano } from '../models/tamano.model.js'
 import { MetodoPago } from '../models/metodo_pago.model.js'
 import { EstadoPedido } from '../models/estado_pedido.model.js'
 import { ROLES } from '../config/roles.config.js'
+import { MercadoPagoConfig, Preference, Payment } from 'mercadopago'
+import { MP_ACCESS_TOKEN, FRONTEND_URL, NOTIFICATION_URL } from '../config/env.config.js'
 import { db } from '../config/db.config.js'
+
+const mp = new MercadoPagoConfig({ accessToken: MP_ACCESS_TOKEN })
 
 export const getPedidos = async (req, res) => {
   try {
@@ -102,7 +106,6 @@ export const createPedido = async (req, res) => {
       detalles
     } = req.body
 
-    // Crear el pedido base
     const pedido = await Pedido.create({
       id_cliente: idCliente,
       id_repartidor: idRepartidor || null,
@@ -112,7 +115,6 @@ export const createPedido = async (req, res) => {
 
     let totalPedido = 0
 
-    // Recorrer los detalles del pedido
     for (const detalle of detalles) {
       const producto = await Producto.findByPk(detalle.id_producto)
       if (!producto) throw new Error(`Producto ${detalle.id_producto} no encontrado`)
@@ -123,12 +125,10 @@ export const createPedido = async (req, res) => {
 
       const { personalizaciones } = detalle
 
-      // Ingredientes adicionales
       if (personalizaciones?.ingredientes?.length) {
         const idsIng = personalizaciones.ingredientes.map(i => i.id_ingrediente)
         const ingredientesDB = await Ingrediente.findAll({ where: { id: idsIng } })
 
-        // Calcular costo extra considerando cantidad de cada ingrediente
         costoExtraIngredientes = personalizaciones.ingredientes.reduce((sum, ing) => {
           const ingredienteDB = ingredientesDB.find(i => i.id === ing.id_ingrediente)
           const costoExtra = ingredienteDB ? parseFloat(ingredienteDB.costo_extra || 0) : 0
@@ -136,18 +136,15 @@ export const createPedido = async (req, res) => {
         }, 0)
       }
 
-      // Factor del tamaño
       if (personalizaciones?.id_tamano) {
         const tamano = await Tamano.findByPk(personalizaciones.id_tamano)
         if (tamano) factorTamano = parseFloat(tamano.factor_precio || 1)
       }
 
-      // Calcular precio real
       const precioUnitario = (precioBase + costoExtraIngredientes) * factorTamano
       const subtotal = precioUnitario * detalle.cantidad
       totalPedido += subtotal
 
-      // Crear detalle
       const detallePedido = await DetallePedido.create({
         id_pedido: pedido.id,
         id_producto: detalle.id_producto,
@@ -155,7 +152,6 @@ export const createPedido = async (req, res) => {
         precio_unitario: precioUnitario
       }, { transaction })
 
-      // Personalización: tamaño
       if (personalizaciones?.id_tamano) {
         await PedidoDetallePersonalizacion.create({
           id_detalle_pedido: detallePedido.id,
@@ -163,7 +159,6 @@ export const createPedido = async (req, res) => {
         }, { transaction })
       }
 
-      // Personalizaciones: ingredientes
       if (personalizaciones?.ingredientes?.length) {
         for (const ing of personalizaciones.ingredientes) {
           const ingredienteDB = await Ingrediente.findByPk(ing.id_ingrediente)
@@ -177,15 +172,45 @@ export const createPedido = async (req, res) => {
       }
     }
 
-    // Actualizar total del pedido
     pedido.total = totalPedido
     await pedido.save({ transaction })
-
     await transaction.commit()
+
+    const infoPreferencia = {
+      items: [
+        {
+          title: `Pedido #${pedido.id}`,
+          unit_price: Number(totalPedido),
+          quantity: 1
+        }
+      ],
+      back_urls: {
+        success: `${FRONTEND_URL}/pago/success`,
+        failure: `${FRONTEND_URL}/pago/failure`,
+        pending: `${FRONTEND_URL}/pago/pending`
+      },
+      notification_url: NOTIFICATION_URL,
+      auto_return: 'approved',
+      metadata: {
+        id_pedido: pedido.id,
+        id_cliente: pedido.id_cliente
+      },
+      payment_methods: {
+        installments: 1,
+        excluded_payment_types: [
+          { id: 'atm' },
+          { id: 'ticket' }
+        ]
+      }
+    }
+
+    const preferencia = new Preference(mp)
+    const respuesta = await preferencia.create({ body: infoPreferencia })
 
     res.status(201).json({
       mensaje: 'Pedido creado correctamente',
-      pedido
+      pedido,
+      url_pago: respuesta.init_point
     })
   } catch (error) {
     await transaction.rollback()
@@ -228,5 +253,34 @@ export const deletePedido = async (req, res) => {
     res.status(200).json({ mensaje: 'Pedido eliminado (borrado lógico) correctamente', pedido })
   } catch (error) {
     res.status(500).json({ mensaje: 'Error al eliminar pedido', error: error.message })
+  }
+}
+
+export const recibirNotificacionPago = async (req, res) => {
+  const paymentId = req.body?.data?.id
+  const tipoEvento = req.body?.type
+
+  if (tipoEvento !== 'payment' || !paymentId) return res.status(400).send('Evento no procesado')
+
+  try {
+    const payment = await new Payment(mp).get({ id: paymentId })
+    const { status, metadata } = payment
+    const { id_pedido: idPedido } = metadata || {}
+
+    if (status === 'approved' && idPedido) {
+      const pedido = await Pedido.findByPk(idPedido)
+      if (!pedido) return res.status(404).send('Pedido no encontrado')
+
+      const estadoPagado = await EstadoPedido.findOne({ where: { nombre: 'Pagado' } })
+      if (estadoPagado && pedido.id_estado !== estadoPagado.id) {
+        pedido.id_estado = estadoPagado.id
+        await pedido.save()
+      }
+    }
+
+    res.sendStatus(200)
+  } catch (error) {
+    console.error('Webhook error:', error.message)
+    res.status(500).send('Error al procesar notificación')
   }
 }

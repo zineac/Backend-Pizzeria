@@ -6,7 +6,8 @@ import {
   getPedidoById,
   createPedido,
   updateEstadoPedido,
-  deletePedido
+  deletePedido,
+  recibirNotificacionPago
 } from '../controllers/pedido.controller.js'
 import { ROLES } from '../config/roles.config.js'
 
@@ -18,5 +19,6 @@ router.get('/:id', authenticate, requireRole([ROLES.ADMINISTRADOR, ROLES.PERSONA
 router.post('/', authenticate, requireRole([ROLES.ADMINISTRADOR, ROLES.PERSONAL, ROLES.CLIENTE]), createPedido)
 router.put('/:id/estado', authenticate, requireRole([ROLES.ADMINISTRADOR, ROLES.PERSONAL, ROLES.REPARTIDOR]), updateEstadoPedido)
 router.delete('/:id', authenticate, requireRole([ROLES.ADMINISTRADOR]), deletePedido)
+router.post('/notificacion', recibirNotificacionPago)
 
 export default router

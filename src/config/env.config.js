@@ -13,5 +13,9 @@ export const {
   DB_USER = 'root',
   DB_PASSWORD = '',
   // JWT
-  JWT_SECRET = 'MONT-27'
+  JWT_SECRET = 'MONT-27',
+  // MERCADO PAGO
+  MP_ACCESS_TOKEN = '',
+  FRONTEND_URL = '',
+  NOTIFICATION_URL = ''
 } = process.env

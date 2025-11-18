@@ -123,8 +123,8 @@ Cada producto pertenece a una **categoría** y puede estar marcado como **person
 |:--------|:----------|:-------------|:------------------|:------------------------|:----------------------|
 | **GET** | `/api/producto` | Lista todos los productos disponibles. | `ADMINISTRADOR`, `PERSONAL`, `CLIENTE`, `REPARTIDOR` | — | `nombre`, `activo` (`true/false`), `id_categoria`, `personalizable` (`true/false`) |
 | **GET** | `/api/producto/:id` | Obtiene los datos de un producto específico (incluye su categoría). | `ADMINISTRADOR`, `PERSONAL`, `CLIENTE`, `REPARTIDOR` | `id` | — |
-| **POST** | `/api/producto` | Crea un nuevo producto en el sistema. | `ADMINISTRADOR` | `nombre`, `precio`, `id_categoria` | `descripcion`, `personalizable` (`true/false`), `activo` (`true/false`) |
-| **PUT** | `/api/producto/:id` | Actualiza la información de un producto existente. | `ADMINISTRADOR`, `PERSONAL` | `id` | `nombre`, `descripcion`, `precio`, `id_categoria`, `personalizable`, `activo` |
+| **POST** | `/api/producto` | Crea un nuevo producto en el sistema. | `ADMINISTRADOR` | `nombre`, `precio`, `id_categoria` | `descripcion`, `personalizable` (`true/false`), `activo` (`true/false`), **`imagen_url`** |
+| **PUT** | `/api/producto/:id` | Actualiza la información de un producto existente. | `ADMINISTRADOR`, `PERSONAL` | `id` | `nombre`, `descripcion`, `precio`, `id_categoria`, `personalizable`, `activo`, **`imagen_url`** |
 | **DELETE** | `/api/producto/:id` | Desactiva un producto (borrado lógico: `activo = false`). | `ADMINISTRADOR` | `id` | — |
 | **GET** | `/api/producto/:id/ingrediente` | Lista los ingredientes asociados a un producto. | `ADMINISTRADOR`, `PERSONAL`, `CLIENTE`, `REPARTIDOR` | `id` | — |
 | **POST** | `/api/producto/:id/ingrediente` | Agrega varios ingredientes a un producto existente. | `ADMINISTRADOR`, `PERSONAL` | `id`, `ingredientes` (array de IDs) | — |

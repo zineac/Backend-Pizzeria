@@ -81,7 +81,7 @@ export const getProductoById = async (req, res) => {
 }
 
 export const createProducto = async (req, res) => {
-  const { nombre, descripcion, precio, id_categoria: idCategoria, personalizable, activo } = req.body
+  const { nombre, descripcion, precio, id_categoria: idCategoria, personalizable, activo, imagen_url: imagenUrl } = req.body
   try {
     const nuevoProducto = await Producto.create({
       nombre,
@@ -89,7 +89,8 @@ export const createProducto = async (req, res) => {
       precio,
       id_categoria: idCategoria,
       personalizable: personalizable ?? false,
-      activo: activo ?? true
+      activo: activo ?? true,
+      imagen_url: imagenUrl ?? null
     })
 
     res.status(201).json({ mensaje: 'Producto creado', producto: nuevoProducto })
@@ -100,7 +101,7 @@ export const createProducto = async (req, res) => {
 
 export const updateProducto = async (req, res) => {
   const { id } = req.params
-  const { nombre, descripcion, precio, id_categoria: idCategoria, personalizable, activo } = req.body
+  const { nombre, descripcion, precio, id_categoria: idCategoria, personalizable, activo, imagen_url: imagenUrl } = req.body
   try {
     const producto = await Producto.findByPk(id)
     if (!producto) return res.status(404).json({ mensaje: 'Producto no encontrado' })
@@ -111,6 +112,7 @@ export const updateProducto = async (req, res) => {
     producto.id_categoria = idCategoria ?? producto.id_categoria
     producto.personalizable = personalizable ?? producto.personalizable
     producto.activo = activo ?? producto.activo
+    producto.imagen_url = imagenUrl ?? producto.imagen_url
 
     await producto.save()
     res.json({ mensaje: 'Producto actualizado', producto })

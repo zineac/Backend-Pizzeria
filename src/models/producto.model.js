@@ -8,7 +8,8 @@ export const Producto = db.define('Producto', {
   precio: { type: DataTypes.DECIMAL(10, 2), allowNull: false },
   id_categoria: { type: DataTypes.INTEGER, allowNull: false },
   personalizable: { type: DataTypes.BOOLEAN, defaultValue: false },
-  activo: { type: DataTypes.BOOLEAN, defaultValue: true }
+  activo: { type: DataTypes.BOOLEAN, defaultValue: true },
+  imagen_url: { type: DataTypes.STRING(255), allowNull: true }
 }, {
   tableName: 'productos',
   timestamps: false

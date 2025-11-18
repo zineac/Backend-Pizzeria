@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { authenticate } from '../middlewares/authenticate.js'
+import { authenticate, authenticateOptional } from '../middlewares/authenticate.js'
 import { requireRole } from '../middlewares/authorize.js'
 import { ROLES } from '../config/roles.config.js'
 import {
@@ -12,8 +12,8 @@ import {
 
 const router = Router()
 
-router.get('/', authenticate, getTamanos)
-router.get('/:id', authenticate, getTamanoById)
+router.get('/', authenticateOptional, getTamanos)
+router.get('/:id', authenticateOptional, getTamanoById)
 
 router.post('/', authenticate, requireRole([ROLES.ADMINISTRADOR]), createTamano)
 router.put('/:id', authenticate, requireRole([ROLES.ADMINISTRADOR]), updateTamano)

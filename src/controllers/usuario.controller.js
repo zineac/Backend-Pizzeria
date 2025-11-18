@@ -76,15 +76,23 @@ export const getUsuarios = async (req, res) => {
     if (nombre) whereClause.nombre = { [Op.like]: `%${nombre}%` }
     if (activo !== undefined) whereClause.activo = activo === 'true'
 
+    let include = { association: 'rol' }
+
     if (req.user.rol === ROLES.PERSONAL) {
       whereClause.id_rol = 1
-    } else if (req.user.rol === ROLES.ADMINISTRADOR && rol) {
-      whereClause.id_rol = Number(rol)
+    } else if (req.user.rol === ROLES.ADMINISTRADOR) {
+      if (rol) whereClause.id_rol = Number(rol)
+    } else if (req.user.rol === ROLES.CLIENTE) {
+      include = {
+        association: 'rol',
+        where: { nombre: ROLES.REPARTIDOR },
+        required: true
+      }
     }
 
     const usuarios = await Usuario.findAll({
       where: whereClause,
-      include: { association: 'rol' },
+      include,
       attributes: { exclude: ['password'] }
     })
 
@@ -97,10 +105,18 @@ export const getUsuarios = async (req, res) => {
 export const getUsuarioById = async (req, res) => {
   const { id } = req.params
   try {
-    const usuario = await Usuario.findByPk(id, { include: { association: 'rol' }, attributes: { exclude: ['password'] } })
+    const usuario = await Usuario.findByPk(id, {
+      include: { association: 'rol' },
+      attributes: { exclude: ['password'] }
+    })
+
     if (!usuario) return res.status(404).json({ mensaje: 'Usuario no encontrado' })
 
-    if (req.user.rol === ROLES.PERSONAL && usuario.id_rol !== 1) {
+    if (req.user.rol === ROLES.PERSONAL && usuario.rol?.nombre !== ROLES.CLIENTE) {
+      return res.status(403).json({ mensaje: 'No tienes permiso para ver este usuario' })
+    }
+
+    if (req.user.rol === ROLES.CLIENTE && usuario.rol?.nombre !== ROLES.REPARTIDOR) {
       return res.status(403).json({ mensaje: 'No tienes permiso para ver este usuario' })
     }
 

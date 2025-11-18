@@ -21,22 +21,24 @@ Los usuarios registrados se crean automáticamente con el rol **CLIENTE (`id_rol
 Rutas de gestión de usuarios.  
 - **ADMINISTRADOR** puede crear, actualizar, eliminar y listar todos los usuarios.  
 - **PERSONAL** solo puede listar y ver usuarios con rol **cliente**.  
+- **CLIENTE** solo puede listar y ver usuarios con rol **repartidor**.  
 - Cualquier usuario autenticado puede actualizar o desactivar su propio perfil mediante `/me`.
 
-| Método | Endpoint                  | Descripción                                                                                           | Roles Permitidos                | Parámetros Obligatorios                         | Parámetros Opcionales                                      |
-|:--------|:--------------------------|:------------------------------------------------------------------------------------------------------|:--------------------------------|:------------------------------------------------|:------------------------------------------------------------|
-| **POST** | `/api/usuario`           | Crea un nuevo usuario.                                                                                | `ADMINISTRADOR`                 | `nombre`, `email`, `password`, `id_rol`         | `telefono`, `direccion`                                    |
-| **GET**  | `/api/usuario`           | Lista todos los usuarios. Admite filtros.                                                             | `ADMINISTRADOR`, `PERSONAL`     | —                                              | `nombre`, `activo` (`true/false`), `rol`                   |
-| **GET**  | `/api/usuario/:id`       | Obtiene los datos de un usuario por su `id`.                                                          | `ADMINISTRADOR`, `PERSONAL`     | `id`                                           | —                                                          |
-| **PUT**  | `/api/usuario/:id`       | Actualiza los datos de un usuario existente.                                                          | `ADMINISTRADOR`                 | —                                              | `nombre`, `email`, `telefono`, `direccion`, `activo`, `id_rol` |
-| **DELETE** | `/api/usuario/:id`     | Desactiva un usuario (borrado lógico: `activo = false`).                                              | `ADMINISTRADOR`                 | `id`                                           | —                                                          |
-| **PUT**  | `/api/usuario/me`        | Actualiza el perfil del usuario autenticado.                                                          | `Todos los usuarios`            | —                                              | `nombre`, `email`, `telefono`, `direccion`, `password`      |
-| **DELETE** | `/api/usuario/me`      | Desactiva la cuenta del usuario autenticado (borrado lógico: `activo = false`).                       | `Todos los usuarios`            | —                                              | —                                                          |
+| Método | Endpoint                  | Descripción                                                                                           | Roles Permitidos                                      | Parámetros Obligatorios                         | Parámetros Opcionales                                      |
+|:--------|:--------------------------|:------------------------------------------------------------------------------------------------------|:-------------------------------------------------------|:------------------------------------------------|:------------------------------------------------------------|
+| **POST** | `/api/usuario`           | Crea un nuevo usuario.                                                                                | `ADMINISTRADOR`                                       | `nombre`, `email`, `password`, `id_rol`         | `telefono`, `direccion`                                    |
+| **GET**  | `/api/usuario`           | Lista todos los usuarios. Admite filtros.                                                             | `ADMINISTRADOR`, `PERSONAL`, `CLIENTE`                | —                                              | `nombre`, `activo` (`true/false`), `rol` *(solo ADMIN)*    |
+| **GET**  | `/api/usuario/:id`       | Obtiene los datos de un usuario por su `id`.                                                          | `ADMINISTRADOR`, `PERSONAL`, `CLIENTE`                | `id`                                           | —                                                          |
+| **PUT**  | `/api/usuario/:id`       | Actualiza los datos de un usuario existente.                                                          | `ADMINISTRADOR`                                       | —                                              | `nombre`, `email`, `telefono`, `direccion`, `activo`, `id_rol` |
+| **DELETE** | `/api/usuario/:id`     | Desactiva un usuario (borrado lógico: `activo = false`).                                              | `ADMINISTRADOR`                                       | `id`                                           | —                                                          |
+| **PUT**  | `/api/usuario/me`        | Actualiza el perfil del usuario autenticado.                                                          | `Todos los usuarios`                                  | —                                              | `nombre`, `email`, `telefono`, `direccion`, `password`      |
+| **DELETE** | `/api/usuario/me`      | Desactiva la cuenta del usuario autenticado (borrado lógico: `activo = false`).                       | `Todos los usuarios`                                  | —                                              | —                                                          |
 
 > **Notas:**
-> - Los parámetros opcionales pueden enviarse parcialmente para actualizar solo los campos deseados.  
-> - El campo `activo` es de tipo booleano (`true`/`false`).  
-> - Los filtros en `GET /api/usuario` se envían como **query params** (ejemplo: `/api/usuario?nombre=Juan&activo=true`).
+> - `PERSONAL` solo accede a usuarios con rol **cliente**.  
+> - `CLIENTE` solo accede a usuarios con rol **repartidor**.  
+> - Los filtros en `GET /api/usuario` se envían como **query params**.  
+> - El parámetro `rol` en filtros únicamente es permitido para **ADMINISTRADOR**.  
 
 
 ## 🎭 Rutas de Roles (`/api/rol`)

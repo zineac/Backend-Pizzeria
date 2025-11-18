@@ -15,15 +15,17 @@ Content-Type: application/json
 }
 
 ### Obtener usuarios
-# Lista todos los usuarios. 
+# Lista todos los usuarios.
 # ADMINISTRADOR puede ver todos los usuarios y aplicar filtros.
 # PERSONAL solo puede ver usuarios con rol cliente.
-# Parámetros opcionales (query): nombre, activo (true/false), rol
+# CLIENTE solo puede ver usuarios con rol repartidor.
+# Parámetros opcionales (query): nombre, activo (true/false), rol (solo ADMINISTRADOR)
 GET http://localhost:8000/api/usuario?nombre=Juan&activo=true&rol=1
 
 ### Obtener usuario por ID
 # Trae los datos de un usuario específico por su ID.
 # PERSONAL solo puede acceder a usuarios con rol cliente.
+# CLIENTE solo puede acceder a usuarios con rol repartidor.
 GET http://localhost:8000/api/usuario/9
 
 ### Actualizar usuario

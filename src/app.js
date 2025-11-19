@@ -12,10 +12,11 @@ import categoriaRoutes from './routes/categoria.routes.js'
 import tamanoRoutes from './routes/tamano.routes.js'
 import pedidoRoutes from './routes/pedido.routes.js'
 import sugerenciaRoutes from './routes/sugerencia.routes.js'
+import { FRONTEND_URL } from './config/env.config.js'
 
 const app = express()
 
-app.use(cors({ origin: ['*', undefined], credentials: true }))
+app.use(cors({ origin: FRONTEND_URL, credentials: true }))
 app.use(express.json())
 app.use(cookieParser())
 

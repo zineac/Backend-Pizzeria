@@ -3,7 +3,7 @@ dotenv.config()
 
 export const {
   // API
-  HOST = 'localhost',
+  HOST = '0.0.0.0',
   PORT = '8000',
   // BD
   DB_SQL = 'mysql',

@@ -185,9 +185,9 @@ export const createPedido = async (req, res) => {
         }
       ],
       back_urls: {
-        success: `${FRONTEND_URL}/pago/success`,
-        failure: `${FRONTEND_URL}/pago/failure`,
-        pending: `${FRONTEND_URL}/pago/pending`
+        success: FRONTEND_URL,
+        failure: FRONTEND_URL,
+        pending: FRONTEND_URL
       },
       notification_url: NOTIFICATION_URL,
       auto_return: 'approved',

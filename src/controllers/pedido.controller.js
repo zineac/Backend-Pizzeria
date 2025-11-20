@@ -174,7 +174,6 @@ export const createPedido = async (req, res) => {
 
     pedido.total = totalPedido
     await pedido.save({ transaction })
-    await transaction.commit()
 
     const infoPreferencia = {
       items: [
@@ -206,6 +205,7 @@ export const createPedido = async (req, res) => {
 
     const preferencia = new Preference(mp)
     const respuesta = await preferencia.create({ body: infoPreferencia })
+    await transaction.commit()
 
     res.status(201).json({
       mensaje: 'Pedido creado correctamente',
@@ -213,7 +213,8 @@ export const createPedido = async (req, res) => {
       url_pago: respuesta.init_point
     })
   } catch (error) {
-    await transaction.rollback()
+    console.log(error)
+    if (transaction && !transaction.finished) await transaction.rollback()
     res.status(500).json({
       mensaje: 'Error al crear pedido',
       error: error.message

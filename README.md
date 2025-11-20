@@ -72,12 +72,12 @@ Cada categoría puede estar activa o inactiva.
 - **CLIENTE** y **REPARTIDOR** solo pueden ver categorías activas.  
 
 | Método | Endpoint | Descripción | Roles Permitidos | Parámetros Obligatorios | Parámetros Opcionales |
-|:--------|:----------|:-------------|:------------------|:------------------------|:----------------------|
+|--------|----------|-------------|------------------|-------------------------|------------------------|
 | **GET** | `/api/categoria` | Lista todas las categorías disponibles. | `ADMINISTRADOR`, `PERSONAL`, `CLIENTE`, `REPARTIDOR` | — | `nombre`, `activo` (`true/false`) |
 | **GET** | `/api/categoria/:id` | Obtiene los datos de una categoría específica. | `ADMINISTRADOR`, `PERSONAL`, `CLIENTE`, `REPARTIDOR` | `id` | — |
-| **POST** | `/api/categoria` | Crea una nueva categoría. | `ADMINISTRADOR` | `nombre` | `descripcion` |
-| **PUT** | `/api/categoria/:id` | Actualiza la información de una categoría existente. | `ADMINISTRADOR` | `id` | `nombre`, `descripcion`, `activo` (`true/false`) |
-| **DELETE** | `/api/categoria/:id` | Desactiva una categoría (borrado lógico: `activo = false`). | `ADMINISTRADOR` | `id` | — |
+| **POST** | `/api/categoria` | Crea una nueva categoría. | `ADMINISTRADOR` | `nombre` | `descripcion`, `imagen_url` |
+| **PUT** | `/api/categoria/:id` | Actualiza la información de una categoría existente. | `ADMINISTRADOR` | `id` | `nombre`, `descripcion`, `activo` (`true/false`), `imagen_url` |
+| **DELETE** | `/api/categoria/:id` | Desactiva una categoría (borrado lógico). | `ADMINISTRADOR` | `id` | — |
 
 > ### **Notas:**
 > - Las **categorías inactivas (`activo = false`)** no son visibles para `CLIENTE` ni `REPARTIDOR`.  

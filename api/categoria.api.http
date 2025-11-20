@@ -4,6 +4,7 @@
 # - ADMINISTRADOR y PERSONAL pueden ver activas e inactivas.
 # - CLIENTE y REPARTIDOR solo verán las activas.
 # Parámetros opcionales (query): nombre, activo (true/false)
+# Respuesta incluye: id, nombre, descripcion, imagen_url, activo
 GET http://localhost:8000/api/categoria
 
 ###
@@ -12,6 +13,7 @@ GET http://localhost:8000/api/categoria
 # Devuelve los datos de una categoría específica.
 # Accesible para cualquier usuario autenticado.
 # CLIENTE y REPARTIDOR no pueden acceder a categorías inactivas.
+# Respuesta incluye: id, nombre, descripcion, imagen_url, activo
 GET http://localhost:8000/api/categoria/2
 
 ###
@@ -20,13 +22,14 @@ GET http://localhost:8000/api/categoria/2
 # Crea una nueva categoría en el sistema.
 # Solo accesible para ADMINISTRADOR.
 # Parámetros requeridos: nombre
-# Parámetros opcionales: descripcion
+# Parámetros opcionales: descripcion, imagen_url
 POST http://localhost:8000/api/categoria
 Content-Type: application/json
 
 {
   "nombre": "Pizzas",
-  "descripcion": "Categoría de pizzas clásicas y gourmet"
+  "descripcion": "Categoría de pizzas clásicas y gourmet",
+  "imagen_url": "https://mi-cdn.com/images/pizzas.jpg"
 }
 
 ###
@@ -34,13 +37,14 @@ Content-Type: application/json
 ### Actualizar categoría
 # Actualiza la información de una categoría existente.
 # Solo accesible para ADMINISTRADOR.
-# Parámetros opcionales: nombre, descripcion, activo (true/false)
+# Parámetros opcionales: nombre, descripcion, activo (true/false), imagen_url
 PUT http://localhost:8000/api/categoria/5
 Content-Type: application/json
 
 {
   "nombre": "Pizzas Gourmet",
   "descripcion": "Pizzas con ingredientes selectos",
+  "imagen_url": "https://mi-cdn.com/images/pizzas-gourmet.jpg",
   "activo": true
 }
 

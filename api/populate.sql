@@ -1,4 +1,156 @@
+CREATE DATABASE pizzeria;
 USE pizzeria;
+
+-- ===========================================================
+-- TABLA: roles
+-- ===========================================================
+CREATE TABLE roles (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL,
+    activo BOOLEAN DEFAULT TRUE
+);
+
+-- ===========================================================
+-- TABLA: usuarios
+-- ===========================================================
+CREATE TABLE usuarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    telefono VARCHAR(20),
+    direccion VARCHAR(255),
+    id_rol INT NOT NULL,
+    fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP,
+    activo BOOLEAN DEFAULT TRUE,
+    FOREIGN KEY (id_rol) REFERENCES roles(id)
+);
+
+-- ===========================================================
+-- TABLA: categorias  (ACTUALIZADA)
+-- ===========================================================
+CREATE TABLE categorias (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL,
+    descripcion TEXT,
+    imagen_url VARCHAR(255),
+    activo BOOLEAN DEFAULT TRUE
+);
+
+-- ===========================================================
+-- TABLA: productos
+-- ===========================================================
+CREATE TABLE productos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    descripcion TEXT,
+    precio DECIMAL(10,2) NOT NULL,
+    id_categoria INT NOT NULL,
+    personalizable BOOLEAN DEFAULT FALSE,
+    activo BOOLEAN DEFAULT TRUE,
+    imagen_url VARCHAR(255),
+    FOREIGN KEY (id_categoria) REFERENCES categorias(id)
+);
+
+-- ===========================================================
+-- TABLA: ingredientes
+-- ===========================================================
+CREATE TABLE ingredientes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    costo_extra DECIMAL(10,2) DEFAULT 0.00,
+    stock INT DEFAULT 0,
+    activo BOOLEAN DEFAULT TRUE
+);
+
+-- ===========================================================
+-- TABLA INTERMEDIA: producto_ingredientes (Many-to-Many)
+-- ===========================================================
+CREATE TABLE producto_ingredientes (
+    id_producto INT NOT NULL,
+    id_ingrediente INT NOT NULL,
+    PRIMARY KEY (id_producto, id_ingrediente),
+    FOREIGN KEY (id_producto) REFERENCES productos(id),
+    FOREIGN KEY (id_ingrediente) REFERENCES ingredientes(id)
+);
+
+-- ===========================================================
+-- TABLA: metodos_pago
+-- ===========================================================
+CREATE TABLE metodos_pago (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    tipo VARCHAR(50) NOT NULL,
+    descripcion VARCHAR(100),
+    activo BOOLEAN DEFAULT TRUE
+);
+
+-- ===========================================================
+-- TABLA: estados_pedido
+-- ===========================================================
+CREATE TABLE estados_pedido (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL,
+    activo BOOLEAN DEFAULT TRUE
+);
+
+-- ===========================================================
+-- TABLA: pedidos
+-- ===========================================================
+CREATE TABLE pedidos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_cliente INT NOT NULL,
+    id_repartidor INT,
+    id_metodo_pago INT,
+    id_estado INT DEFAULT 1,
+    fecha_pedido DATETIME DEFAULT CURRENT_TIMESTAMP,
+    total DECIMAL(10,2) DEFAULT 0.00,
+    activo BOOLEAN DEFAULT TRUE,
+
+    FOREIGN KEY (id_cliente) REFERENCES usuarios(id),
+    FOREIGN KEY (id_repartidor) REFERENCES usuarios(id),
+    FOREIGN KEY (id_metodo_pago) REFERENCES metodos_pago(id),
+    FOREIGN KEY (id_estado) REFERENCES estados_pedido(id)
+);
+
+-- ===========================================================
+-- TABLA: detalle_pedido
+-- ===========================================================
+CREATE TABLE detalle_pedido (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_pedido INT NOT NULL,
+    id_producto INT NOT NULL,
+    cantidad INT NOT NULL,
+    precio_unitario DECIMAL(10,2) NOT NULL,
+
+    FOREIGN KEY (id_pedido) REFERENCES pedidos(id),
+    FOREIGN KEY (id_producto) REFERENCES productos(id)
+);
+
+-- ===========================================================
+-- TABLA: tamanos
+-- ===========================================================
+CREATE TABLE tamanos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL,
+    factor_precio DECIMAL(4,2) DEFAULT 1.00,
+    activo BOOLEAN DEFAULT TRUE
+);
+
+-- ===========================================================
+-- TABLA: pedido_detalle_personalizacion
+-- ===========================================================
+CREATE TABLE pedido_detalle_personalizacion (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_detalle_pedido INT NOT NULL,
+    id_tamano INT,
+    id_ingrediente INT,
+    cantidad INT DEFAULT 1,
+    costo_extra DECIMAL(10,2) DEFAULT 0.00,
+
+    FOREIGN KEY (id_detalle_pedido) REFERENCES detalle_pedido(id),
+    FOREIGN KEY (id_tamano) REFERENCES tamanos(id),
+    FOREIGN KEY (id_ingrediente) REFERENCES ingredientes(id)
+);
 
 -- =================================
 -- Roles
@@ -48,13 +200,19 @@ INSERT INTO tamanos (nombre, factor_precio) VALUES
 -- =================================
 -- Categorías (existentes + nuevas)
 -- =================================
-INSERT INTO categorias (nombre, descripcion) VALUES
-('Pizza', 'Pizzas artesanales personalizables'),
-('Bebida', 'Refrescos, aguas y jugos'),
-('Postre', 'Postres dulces y complementos'),
-('Entradas', 'Aperitivos y entrantes para compartir'),
-('Combos', 'Ofertas y combos familiares'),
-('Extras', 'Añadidos y salsas');
+INSERT INTO categorias (nombre, descripcion, imagen_url) VALUES
+('Pizza', 'Pizzas artesanales personalizables',
+ 'https://images.pexels.com/photos/315755/pexels-photo-315755.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'),
+('Bebida', 'Refrescos, aguas y jugos',
+ 'https://images.pexels.com/photos/1410230/pexels-photo-1410230.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'),
+('Postre', 'Postres dulces y complementos',
+ 'https://images.pexels.com/photos/302680/pexels-photo-302680.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'),
+('Entradas', 'Aperitivos y entrantes para compartir',
+ 'https://images.pexels.com/photos/1437267/pexels-photo-1437267.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'),
+('Combos', 'Ofertas y combos familiares',
+ 'https://images.pexels.com/photos/7651/food-plate-dinner-lunch.jpg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'),
+('Extras', 'Añadidos y salsas',
+ 'https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');
 
 -- =================================
 -- Ingredientes (existentes + nuevos)

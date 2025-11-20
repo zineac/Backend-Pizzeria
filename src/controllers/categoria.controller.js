@@ -40,9 +40,14 @@ export const getCategoriaById = async (req, res) => {
 }
 
 export const createCategoria = async (req, res) => {
-  const { nombre, descripcion } = req.body
+  const { nombre, descripcion, imagen_url: imagenUrl } = req.body
   try {
-    const nuevaCategoria = await Categoria.create({ nombre, descripcion, activo: true })
+    const nuevaCategoria = await Categoria.create({
+      nombre,
+      descripcion,
+      imagen_url: imagenUrl ?? null,
+      activo: true
+    })
     res.status(201).json({ mensaje: 'Categoría creada correctamente', categoria: nuevaCategoria })
   } catch (error) {
     res.status(500).json({ mensaje: 'Error al crear la categoría', error: error.message })
@@ -51,13 +56,16 @@ export const createCategoria = async (req, res) => {
 
 export const updateCategoria = async (req, res) => {
   const { id } = req.params
-  const { nombre, descripcion, activo } = req.body
+  const { nombre, descripcion, activo, imagen_url: imagenUrl } = req.body
   try {
     const categoria = await Categoria.findByPk(id)
     if (!categoria) return res.status(404).json({ mensaje: 'Categoría no encontrada' })
+
     categoria.nombre = nombre ?? categoria.nombre
     categoria.descripcion = descripcion ?? categoria.descripcion
+    categoria.imagen_url = imagenUrl ?? categoria.imagen_url
     if (activo !== undefined) categoria.activo = activo
+
     await categoria.save()
     res.json({ mensaje: 'Categoría actualizada correctamente', categoria })
   } catch (error) {
@@ -70,8 +78,10 @@ export const deleteCategoria = async (req, res) => {
   try {
     const categoria = await Categoria.findByPk(id)
     if (!categoria) return res.status(404).json({ mensaje: 'Categoría no encontrada' })
+
     categoria.activo = false
     await categoria.save()
+
     res.json({ mensaje: 'Categoría desactivada correctamente' })
   } catch (error) {
     res.status(500).json({ mensaje: 'Error al eliminar la categoría', error: error.message })

@@ -25,7 +25,7 @@ export const getPedidos = async (req, res) => {
     const pedidos = await Pedido.findAll({
       where,
       include: [
-        { model: Usuario, as: 'cliente', attributes: ['id', 'nombre'] },
+        { model: Usuario, as: 'cliente', attributes: ['id', 'nombre', 'direccion'] },
         { model: Usuario, as: 'repartidor', attributes: ['id', 'nombre'] },
         { model: MetodoPago, as: 'metodoPago', attributes: ['id', 'tipo', 'descripcion'] },
         { model: EstadoPedido, as: 'estadoPedido', attributes: ['id', 'nombre'] },

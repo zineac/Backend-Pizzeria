@@ -40,7 +40,13 @@ export const loginUser = async (req, res) => {
       { expiresIn: '1h' }
     )
 
-    res.cookie('token', token, { httpOnly: true, maxAge: 1000 * 60 * 60 })
+    res.cookie('token', token, {
+      httpOnly: true,
+      maxAge: 1000 * 60 * 60,
+      sameSite: 'none',
+      secure: true
+    })
+
     res.json({ mensaje: 'Login exitoso' })
   } catch (error) {
     console.error(error)

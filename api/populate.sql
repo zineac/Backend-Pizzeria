@@ -105,6 +105,7 @@ CREATE TABLE pedidos (
     fecha_pedido DATETIME DEFAULT CURRENT_TIMESTAMP,
     total DECIMAL(10,2) DEFAULT 0.00,
     activo BOOLEAN DEFAULT TRUE,
+    pedido_url VARCHAR(255),
 
     FOREIGN KEY (id_cliente) REFERENCES usuarios(id),
     FOREIGN KEY (id_repartidor) REFERENCES usuarios(id),
@@ -186,7 +187,6 @@ INSERT INTO estados_pedido (nombre) VALUES
 ('Preparando'),
 ('En camino'),
 ('Entregado'),
-('Cancelado'),
 ('Rechazado');
 
 -- =================================

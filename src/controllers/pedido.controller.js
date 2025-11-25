@@ -1,4 +1,5 @@
 import { Pedido } from '../models/pedido.model.js'
+import { Rol } from '../models/rol.model.js'
 import { DetallePedido } from '../models/detalle_pedido.model.js'
 import { PedidoDetallePersonalizacion } from '../models/pedido_detalle_personalizacion.model.js'
 import { Producto } from '../models/producto.model.js'
@@ -11,7 +12,7 @@ import { ROLES } from '../config/roles.config.js'
 import { MercadoPagoConfig, Preference, Payment } from 'mercadopago'
 import { MP_ACCESS_TOKEN, FRONTEND_URL, NOTIFICATION_URL } from '../config/env.config.js'
 import { db } from '../config/db.config.js'
-
+import { Sequelize } from 'sequelize'
 const mp = new MercadoPagoConfig({ accessToken: MP_ACCESS_TOKEN })
 
 export const getPedidos = async (req, res) => {
@@ -96,132 +97,6 @@ export const getPedidoById = async (req, res) => {
   }
 }
 
-export const createPedido = async (req, res) => {
-  const transaction = await db.transaction()
-  try {
-    const {
-      id_cliente: idCliente,
-      id_repartidor: idRepartidor,
-      id_metodo_pago: idMetodoPago,
-      detalles
-    } = req.body
-
-    const pedido = await Pedido.create({
-      id_cliente: idCliente,
-      id_repartidor: idRepartidor || null,
-      id_metodo_pago: idMetodoPago,
-      total: 0
-    }, { transaction })
-
-    let totalPedido = 0
-
-    for (const detalle of detalles) {
-      const producto = await Producto.findByPk(detalle.id_producto)
-      if (!producto) throw new Error(`Producto ${detalle.id_producto} no encontrado`)
-
-      const precioBase = parseFloat(producto.precio)
-      let costoExtraIngredientes = 0
-      let factorTamano = 1
-
-      const { personalizaciones } = detalle
-
-      if (personalizaciones?.ingredientes?.length) {
-        const idsIng = personalizaciones.ingredientes.map(i => i.id_ingrediente)
-        const ingredientesDB = await Ingrediente.findAll({ where: { id: idsIng } })
-
-        costoExtraIngredientes = personalizaciones.ingredientes.reduce((sum, ing) => {
-          const ingredienteDB = ingredientesDB.find(i => i.id === ing.id_ingrediente)
-          const costoExtra = ingredienteDB ? parseFloat(ingredienteDB.costo_extra || 0) : 0
-          return sum + (costoExtra * (ing.cantidad || 1))
-        }, 0)
-      }
-
-      if (personalizaciones?.id_tamano) {
-        const tamano = await Tamano.findByPk(personalizaciones.id_tamano)
-        if (tamano) factorTamano = parseFloat(tamano.factor_precio || 1)
-      }
-
-      const precioUnitario = (precioBase + costoExtraIngredientes) * factorTamano
-      const subtotal = precioUnitario * detalle.cantidad
-      totalPedido += subtotal
-
-      const detallePedido = await DetallePedido.create({
-        id_pedido: pedido.id,
-        id_producto: detalle.id_producto,
-        cantidad: detalle.cantidad,
-        precio_unitario: precioUnitario
-      }, { transaction })
-
-      if (personalizaciones?.id_tamano) {
-        await PedidoDetallePersonalizacion.create({
-          id_detalle_pedido: detallePedido.id,
-          id_tamano: personalizaciones.id_tamano
-        }, { transaction })
-      }
-
-      if (personalizaciones?.ingredientes?.length) {
-        for (const ing of personalizaciones.ingredientes) {
-          const ingredienteDB = await Ingrediente.findByPk(ing.id_ingrediente)
-          await PedidoDetallePersonalizacion.create({
-            id_detalle_pedido: detallePedido.id,
-            id_ingrediente: ing.id_ingrediente,
-            cantidad: ing.cantidad || 1,
-            costo_extra: (ingredienteDB?.costo_extra || 0) * (ing.cantidad || 1)
-          }, { transaction })
-        }
-      }
-    }
-
-    pedido.total = totalPedido
-    await pedido.save({ transaction })
-
-    const infoPreferencia = {
-      items: [
-        {
-          title: `Pedido #${pedido.id}`,
-          unit_price: Number(totalPedido),
-          quantity: 1
-        }
-      ],
-      back_urls: {
-        success: FRONTEND_URL,
-        failure: FRONTEND_URL,
-        pending: FRONTEND_URL
-      },
-      notification_url: NOTIFICATION_URL,
-      auto_return: 'approved',
-      metadata: {
-        id_pedido: pedido.id,
-        id_cliente: pedido.id_cliente
-      },
-      payment_methods: {
-        installments: 1,
-        excluded_payment_types: [
-          { id: 'atm' },
-          { id: 'ticket' }
-        ]
-      }
-    }
-
-    const preferencia = new Preference(mp)
-    const respuesta = await preferencia.create({ body: infoPreferencia })
-    await transaction.commit()
-
-    res.status(201).json({
-      mensaje: 'Pedido creado correctamente',
-      pedido,
-      url_pago: respuesta.init_point
-    })
-  } catch (error) {
-    console.log(error)
-    if (transaction && !transaction.finished) await transaction.rollback()
-    res.status(500).json({
-      mensaje: 'Error al crear pedido',
-      error: error.message
-    })
-  }
-}
-
 export const updateEstadoPedido = async (req, res) => {
   try {
     const { id } = req.params
@@ -283,5 +158,216 @@ export const recibirNotificacionPago = async (req, res) => {
   } catch (error) {
     console.error('Webhook error:', error.message)
     res.status(500).send('Error al procesar notificación')
+  }
+}
+
+export async function validarIdsPedido ({ idCliente, idRepartidor, idMetodoPago, detalles }) {
+  const cliente = await Usuario.findByPk(idCliente)
+  if (!cliente) throw new Error(`El cliente con id ${idCliente} no existe`)
+
+  if (idRepartidor) {
+    const repartidor = await Usuario.findByPk(idRepartidor)
+    if (!repartidor) throw new Error(`El repartidor con id ${idRepartidor} no existe`)
+  }
+
+  const metodo = await MetodoPago.findByPk(idMetodoPago)
+  if (!metodo) throw new Error(`El método de pago con id ${idMetodoPago} no existe`)
+
+  const productoIds = [...new Set(detalles.map(d => d.id_producto))]
+  const productos = await Producto.findAll({ where: { id: productoIds } })
+  const productosMap = new Map(productos.map(p => [p.id, p]))
+  for (const id of productoIds) {
+    if (!productosMap.has(id)) throw new Error(`El producto con id ${id} no existe`)
+  }
+  return { productosMap }
+}
+
+export async function obtenerRepartidorConMenosPedidos (transaction = null) {
+  const rol = await Rol.findOne({ where: { nombre: ROLES.REPARTIDOR }, transaction })
+  if (!rol) throw new Error('El rol "Repartidor" no existe')
+
+  const sql = `
+    SELECT u.id
+    FROM usuarios u
+    LEFT JOIN pedidos p ON p.id_repartidor = u.id
+    WHERE u.id_rol = :rolId
+    GROUP BY u.id
+    ORDER BY COUNT(p.id) ASC
+    LIMIT 1
+  `
+  const [results] = await db.query(sql, { replacements: { rolId: rol.id }, transaction, type: Sequelize.QueryTypes.SELECT })
+  if (!results) {
+    const repartidor = await Usuario.findOne({ where: { id_rol: rol.id }, attributes: ['id'], transaction })
+    if (!repartidor) throw new Error('No hay repartidores registrados')
+    return repartidor.id
+  }
+  return results.id
+}
+
+function buildPreferenciaMP (pedido, total, FRONTEND_URL, NOTIFICATION_URL) {
+  return {
+    items: [
+      {
+        title: `Pedido #${pedido.id}`,
+        unit_price: Number(total),
+        quantity: 1
+      }
+    ],
+    back_urls: {
+      success: FRONTEND_URL,
+      failure: FRONTEND_URL,
+      pending: FRONTEND_URL
+    },
+    notification_url: NOTIFICATION_URL,
+    auto_return: 'approved',
+    metadata: {
+      id_pedido: pedido.id,
+      id_cliente: pedido.id_cliente
+    },
+    payment_methods: {
+      installments: 1,
+      excluded_payment_types: [
+        { id: 'atm' },
+        { id: 'ticket' }
+      ]
+    }
+  }
+}
+
+function prepararFilasDetalles (detalles, pedidoId, productosMap, ingredientesMap, tamanosMap) {
+  const detallesRows = []
+  const personalizacionesRows = []
+  let totalPedido = 0
+
+  for (const det of detalles) {
+    const cantidad = Number(det.cantidad || 1)
+    const producto = productosMap.get(det.id_producto)
+    const precioBase = parseFloat(producto.precio || 0)
+
+    let costoExtraIngredientes = 0
+    if (det.personalizaciones?.ingredientes?.length) {
+      for (const ing of det.personalizaciones.ingredientes) {
+        const ingDB = ingredientesMap.get(ing.id_ingrediente)
+        const costoExtra = ingDB ? parseFloat(ingDB.costo_extra || 0) : 0
+        const qty = Number(ing.cantidad || 1)
+        costoExtraIngredientes += costoExtra * qty
+      }
+    }
+
+    let factorTamano = 1
+    if (det.personalizaciones?.id_tamano) {
+      const t = tamanosMap.get(det.personalizaciones.id_tamano)
+      if (t) factorTamano = parseFloat(t.factor_precio || 1)
+    }
+
+    const precioUnitario = Math.round(((precioBase + costoExtraIngredientes) * factorTamano + Number.EPSILON) * 100) / 100
+    const subtotal = Math.round((precioUnitario * cantidad + Number.EPSILON) * 100) / 100
+    totalPedido += subtotal
+
+    detallesRows.push({
+      id_pedido: pedidoId,
+      id_producto: det.id_producto,
+      cantidad,
+      precio_unitario: precioUnitario
+    })
+
+    const detalleIndex = detallesRows.length - 1
+
+    if (det.personalizaciones?.id_tamano) {
+      personalizacionesRows.push({
+        __detalleIndex: detalleIndex,
+        id_tamano: det.personalizaciones.id_tamano
+      })
+    }
+
+    if (det.personalizaciones?.ingredientes?.length) {
+      for (const ing of det.personalizaciones.ingredientes) {
+        const cantidadIng = Number(ing.cantidad || 1)
+        const ingDB = ingredientesMap.get(ing.id_ingrediente)
+        const costoExtra = (ingDB?.costo_extra || 0) * cantidadIng
+        personalizacionesRows.push({
+          __detalleIndex: detalleIndex,
+          id_ingrediente: ing.id_ingrediente,
+          cantidad: cantidadIng,
+          costo_extra: Math.round((costoExtra + Number.EPSILON) * 100) / 100
+        })
+      }
+    }
+  }
+
+  return { detallesRows, personalizacionesRows, totalPedido }
+}
+
+export const createPedido = async (req, res) => {
+  try {
+    const { id_cliente: idCliente, id_metodo_pago: idMetodoPago, detalles } = req.body
+
+    if (!Array.isArray(detalles) || detalles.length === 0) {
+      return res.status(400).json({ mensaje: 'Detalles inválidos' })
+    }
+
+    const idRepartidor = await obtenerRepartidorConMenosPedidos()
+
+    const { productosMap } = await validarIdsPedido({ idCliente, idRepartidor, idMetodoPago, detalles })
+
+    const ingredienteIds = []
+    const tamanoIds = []
+    detalles.forEach(d => {
+      if (d.personalizaciones?.ingredientes) d.personalizaciones.ingredientes.forEach(i => ingredienteIds.push(i.id_ingrediente))
+      if (d.personalizaciones?.id_tamano) tamanoIds.push(d.personalizaciones.id_tamano)
+    })
+
+    const ingredientes = ingredienteIds.length ? await Ingrediente.findAll({ where: { id: [...new Set(ingredienteIds)] } }) : []
+    const ingredientesMap = new Map(ingredientes.map(i => [i.id, i]))
+
+    const tamanos = tamanoIds.length ? await Tamano.findAll({ where: { id: [...new Set(tamanoIds)] } }) : []
+    const tamanosMap = new Map(tamanos.map(t => [t.id, t]))
+
+    const transaction = await db.transaction()
+    try {
+      const pedido = await Pedido.create({
+        id_cliente: idCliente,
+        id_repartidor: idRepartidor || null,
+        id_metodo_pago: idMetodoPago,
+        total: 0
+      }, { transaction })
+
+      const { detallesRows, personalizacionesRows, totalPedido } = prepararFilasDetalles(detalles, pedido.id, productosMap, ingredientesMap, tamanosMap)
+
+      const detallesCreados = await DetallePedido.bulkCreate(detallesRows, { transaction, returning: true })
+
+      const detalleIdByIndex = detallesCreados.map(d => d.id)
+
+      const personalizacionesFinal = personalizacionesRows.map(p => ({
+        id_detalle_pedido: detalleIdByIndex[p.__detalleIndex],
+        id_tamano: p.id_tamano || null,
+        id_ingrediente: p.id_ingrediente || null,
+        cantidad: p.cantidad || null,
+        costo_extra: p.costo_extra || null
+      }))
+
+      if (personalizacionesFinal.length) {
+        await PedidoDetallePersonalizacion.bulkCreate(personalizacionesFinal, { transaction })
+      }
+
+      pedido.total = Math.round((totalPedido + Number.EPSILON) * 100) / 100
+      await pedido.save({ transaction })
+
+      await transaction.commit()
+
+      const infoPreferencia = buildPreferenciaMP(pedido, pedido.total, FRONTEND_URL, NOTIFICATION_URL)
+      const preferencia = new Preference(mp)
+      const respuesta = await preferencia.create({ body: infoPreferencia })
+
+      pedido.pedido_url = respuesta.init_point
+      await pedido.save()
+
+      return res.status(201).json({ mensaje: 'Pedido creado correctamente', pedido })
+    } catch (err) {
+      if (transaction && !transaction.finished) await transaction.rollback()
+      throw err
+    }
+  } catch (error) {
+    return res.status(500).json({ mensaje: 'Error al crear pedido', error: error.message })
   }
 }

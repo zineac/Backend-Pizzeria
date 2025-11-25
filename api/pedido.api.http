@@ -24,8 +24,7 @@ POST http://localhost:8000/api/pedido
 Content-Type: application/json
 
 {
-  "id_cliente": 6,
-  "id_repartidor": 3,
+  "id_cliente": 5,
   "id_metodo_pago": 1,
   "detalles": [
     {

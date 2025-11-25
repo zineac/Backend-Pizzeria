@@ -9,7 +9,8 @@ export const Pedido = db.define('Pedido', {
   id_estado: { type: DataTypes.INTEGER, defaultValue: 1 },
   fecha_pedido: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
   total: { type: DataTypes.DECIMAL(10, 2), defaultValue: 0.00 },
-  activo: { type: DataTypes.BOOLEAN, defaultValue: true }
+  activo: { type: DataTypes.BOOLEAN, defaultValue: true },
+  pedido_url: { type: DataTypes.STRING(255), allowNull: true }
 }, {
   tableName: 'pedidos',
   timestamps: false

@@ -12,6 +12,7 @@ import categoriaRoutes from './routes/categoria.routes.js'
 import tamanoRoutes from './routes/tamano.routes.js'
 import pedidoRoutes from './routes/pedido.routes.js'
 import sugerenciaRoutes from './routes/sugerencia.routes.js'
+import reporteRoutes from './routes/reporte.routes.js'
 import { FRONTEND_URL } from './config/env.config.js'
 
 const app = express()
@@ -32,5 +33,6 @@ app.use('/api/categoria', categoriaRoutes)
 app.use('/api/tamano', tamanoRoutes)
 app.use('/api/pedido', pedidoRoutes)
 app.use('/api/sugerencia', sugerenciaRoutes)
+app.use('/api/reporte', reporteRoutes)
 
 export default app

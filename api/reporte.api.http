@@ -1,0 +1,51 @@
+### 1. Reporte de pedidos por estado
+GET http://localhost:8000/api/reporte/pedidos
+
+### Con rango de fechas
+GET http://localhost:8000/api/reporte/pedidos?start_date=2025-01-01&end_date=2025-12-31&limit=10
+
+
+
+### 2. Reporte de ventas (solo ADMIN)
+GET http://localhost:8000/api/reporte/ventas
+
+### Con filtros
+GET http://localhost:8000/api/reporte/ventas?start_date=2024-01-01&end_date=2024-12-31&granularity=month&metodo_pago=Efectivo
+
+
+
+### 3. Productos más vendidos
+GET http://localhost:8000/api/reporte/productos
+
+### Con rango y top
+GET http://localhost:8000/api/reporte/productos?start_date=2024-01-01&end_date=2025-01-01&top=5
+
+### Filtrar por categoría
+GET http://localhost:8000/api/reporte/productos?id_categoria=1&top=10
+
+
+
+### 4. Categorías más vendidas
+GET http://localhost:8000/api/reporte/categorias
+
+### Con filtros
+GET http://localhost:8000/api/reporte/categorias?start_date=2024-01-01&end_date=2025-01-01&top=5
+
+
+
+### 5. Ingredientes (uso + stock)
+GET http://localhost:8000/api/reporte/ingredientes
+
+### Con rango y umbral
+GET http://localhost:8000/api/reporte/ingredientes?start_date=2024-01-01&end_date=2025-01-01&umbral=20
+
+### Solo críticos
+GET http://localhost:8000/api/reporte/ingredientes?solo_criticos=true&umbral=10
+
+
+
+### 6. Reporte de clientes (solo ADMIN)
+GET http://localhost:8000/api/reporte/clientes
+
+### Con rango y top
+GET http://localhost:8000/api/reporte/clientes?start_date=2024-01-01&end_date=2025-01-01&top=5

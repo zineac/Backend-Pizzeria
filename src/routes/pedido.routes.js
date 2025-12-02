@@ -18,7 +18,7 @@ router.get('/:id', authenticate, requireRole([ROLES.ADMINISTRADOR, ROLES.PERSONA
 
 router.post('/', authenticate, requireRole([ROLES.ADMINISTRADOR, ROLES.PERSONAL, ROLES.CLIENTE]), createPedido)
 router.put('/:id/estado', authenticate, requireRole([ROLES.ADMINISTRADOR, ROLES.PERSONAL, ROLES.REPARTIDOR]), updateEstadoPedido)
-router.delete('/:id', authenticate, requireRole([ROLES.ADMINISTRADOR]), deletePedido)
+router.delete('/:id', authenticate, requireRole([ROLES.ADMINISTRADOR, ROLES.CLIENTE]), deletePedido)
 router.post('/notificacion', recibirNotificacionPago)
 
 export default router
